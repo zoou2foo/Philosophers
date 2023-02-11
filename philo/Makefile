@@ -66,7 +66,7 @@ MD		=	mkdir -p
 INCLUDE =	-I includes
 
 # Program and directory names
-NAME	=	philosophers
+NAME	=	philo
 SRCDIR	=	src/
 OBJDIR	=	bin/
 TSTDIR	=	tests/
