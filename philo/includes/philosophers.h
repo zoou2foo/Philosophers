@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
+/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/02/11 16:48:23 by valeriejean      ###   ########.fr       */
+/*   Updated: 2023/02/23 12:07:35 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,29 @@
 # include <pthread.h>
 # include <time.h>
 
-#define ERR_NB_ARGS        "Incorrect number of arguments. It has to be 5 or 6\n"
-#define ERR_ARGS           "Incorrect type of arguments. Only positive numbers\n"
-#define ERR_PHILO          "Incorrect number of philosophers at the table\n"
+# define ERR_NB_ARGS	"Incorrect number of arguments. It has to be 5 or 6\n"
+# define ERR_ARGS		"Incorrect type of arguments. Only positive numbers\n"
+# define ERR_PHILO		"Incorrect number of philosophers at the table\n"
 
-type struct s_philo{
-    int     who_ate;
-    int     right_fork;
-    int     left_fork;
-    int     last_meal;
-}   t_philo;
-type struct s_data{
-    int             nb_philos;
-    int             time_to_death;
-    int             time_to_eat;
-    int             time_to_sleep;
-    int             nb_to_eat;
-    pthread_mutex_t machin;
-}   t_data;
+typedef struct s_philo{
+	int		who_ate;
+	int		right_fork;
+	int		left_fork;
+	int		last_meal;
+}			t_philo;
+
+
+typedef struct s_data{
+	int				nb_philos;
+	int				time_to_death;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				nb_to_eat;
+	pthread_mutex_t	machin;
+}					t_data;
 
 /*		PARSING 		*/
+void	parsing(char **str);
 
 /*		section 2		*/
 

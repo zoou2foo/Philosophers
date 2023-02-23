@@ -73,6 +73,8 @@ TSTDIR	=	tests/
 
 # File names
 FILES	=	main \
+			parsing \
+			utils \
 
 
 #LIBFT	=	./libft/libft.a
@@ -81,7 +83,7 @@ SRCS	=	$(addprefix $(SRCDIR), $(addsuffix .c, $(FILES)))
 OBJS	=	$(addprefix $(OBJDIR), $(addsuffix .o, $(FILES)))
 
 
-CMD		=	./philosophers
+CMD		=	./philo
 
 #------------------------------------------------------------------------------#
 #                                   TARGETS                                    #
@@ -92,7 +94,7 @@ all: ldirs $(NAME)
 # Creates the object directories
 ldirs:
 	$(HIDE) $(MD) $(OBJDIR)
-	$(HIDE) $(MD) $(OBJDIR)/built-ins
+	$(HIDE) $(MD) $(OBJDIR)
 
 $(NAME): $(OBJS)
 	$(HIDE) $(START)
