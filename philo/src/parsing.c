@@ -6,16 +6,14 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:17:01 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/01 11:43:06 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/01 14:58:55 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-//first check what I got. 
+
 //If only numbers, check if I have at least 2 philos; no negative time and max 250 philos.
-//init structs
-//Do atoi on args
 
 int	check_args(char **str)
 {
@@ -34,11 +32,9 @@ int	check_args(char **str)
 	return (0);
 }
 
-void	setup_datastruct(char **str)
-{
-	t_data	*data;
 
-	data = malloc(sizeof(t_philo) * 1 + 1); //maybe need to do it somewhere else
+void	setup_datastruct(t_data *data, char **str)
+{
 	data->nb_philos = ft_atoi(str[1]);
 	data->time_to_death = ft_atoi(str[2]);
 	data->time_to_eat = ft_atoi(str[3]);
@@ -54,8 +50,16 @@ void	setup_datastruct(char **str)
 
 void	parsing(char **str) //time to check args and do atoi with args
 {
+	t_data	*data;
+
 	if (check_args(str) == 0)
 	{
-		setup_datastruct(str);
+		data = malloc(sizeof(t_philo) * 1 + 1); //maybe need to do it somewhere else
+		setup_datastruct(data, str);
+		if (data->nb_philos < 2)
+		{
+			printf("%s\n", ERR_PHILO);
+			exit(EXIT_FAILURE);
+		}
 	}
 }

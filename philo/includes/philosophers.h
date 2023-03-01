@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/01 11:36:56 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/01 14:57:08 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@
 # define ERR_NB_ARGS	"Incorrect number of arguments. It has to be 5 or 6\n"
 # define ERR_ARGS		"Incorrect type of arguments. Only positive numbers\n"
 # define ERR_PHILO		"Incorrect number of philosophers at the table\n"
-# define ERR_TYPE_ARGS	"Incorrect type of arguments. Need to be digits"
+# define ERR_TYPE_ARGS	"Incorrect type of arguments. Need to be positive numbers"
+# define ERR_IN_TIME	"Error: no negative time"
+# define ERR_N
 
 typedef struct s_philo{
 	int		who_ate;
