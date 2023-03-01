@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/02/23 12:07:35 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/01 11:36:56 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # define ERR_NB_ARGS	"Incorrect number of arguments. It has to be 5 or 6\n"
 # define ERR_ARGS		"Incorrect type of arguments. Only positive numbers\n"
 # define ERR_PHILO		"Incorrect number of philosophers at the table\n"
+# define ERR_TYPE_ARGS	"Incorrect type of arguments. Need to be digits"
 
 typedef struct s_philo{
 	int		who_ate;
@@ -44,7 +45,9 @@ typedef struct s_data{
 /*		PARSING 		*/
 void	parsing(char **str);
 
-/*		section 2		*/
+/*		UTILS		*/
+int	ft_strlen(char *str);
+int	ft_atoi(char *str);
 
 /*		section 3		*/
 
