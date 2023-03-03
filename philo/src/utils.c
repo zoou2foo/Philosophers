@@ -6,20 +6,20 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:31:45 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/01 14:40:05 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/03 08:10:52 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	ft_strlen(char *str) //useful for malloc
+int	ft_strlen(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])
 		i++;
-	return  (i);
+	return (i);
 }
 
 int	ft_atoi(char *str) //change args in int

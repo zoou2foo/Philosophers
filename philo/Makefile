@@ -75,6 +75,7 @@ TSTDIR	=	tests/
 FILES	=	main \
 			parsing \
 			utils \
+			execute \
 
 
 #LIBFT	=	./libft/libft.a

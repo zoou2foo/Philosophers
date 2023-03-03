@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/01 14:57:08 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/03 08:24:30 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,17 @@
 # define ERR_PHILO		"Incorrect number of philosophers at the table\n"
 # define ERR_TYPE_ARGS	"Incorrect type of arguments. Need to be positive numbers"
 # define ERR_IN_TIME	"Error: no negative time"
-# define ERR_N
+# define ERR_INT		"Error: int too long"
 
-typedef struct s_philo{
+typedef struct s_philo{ //struct for each philo; need to add id;
 	int		who_ate;
 	int		right_fork;
 	int		left_fork;
 	int		last_meal;
 }			t_philo;
+//threads philos[200];
 
-
-typedef struct s_data{
+typedef struct s_data{ //parameters needed for simulation
 	int				nb_philos;
 	int				time_to_death;
 	int				time_to_eat;
@@ -45,12 +45,13 @@ typedef struct s_data{
 }					t_data;
 
 /*		PARSING 		*/
-void	parsing(char **str);
+void	parsing(char **str, t_data *data);
 
 /*		UTILS		*/
 int	ft_strlen(char *str);
 int	ft_atoi(char *str);
 
-/*		section 3		*/
+/*		EXECUTE		*/
+void	execute(t_data *data);
 
 #endif
