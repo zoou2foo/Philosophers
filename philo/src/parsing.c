@@ -6,14 +6,11 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:17:01 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/03 08:27:14 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/03 09:07:43 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-//If no negative time and max 250 philos.
-//If only 1 philo, one fork too. Different threads a bit. Do it separately.
 
 int	check_args(char **str)
 {

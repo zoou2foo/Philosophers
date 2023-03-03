@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/03 08:24:30 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/03 09:14:54 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,10 @@
 # define ERR_INT		"Error: int too long"
 
 typedef struct s_philo{ //struct for each philo; need to add id;
-	int		who_ate;
+	int		who_eat;
+	int		who_think;
+	int		who_sleep;
+	int		who_die;
 	int		right_fork;
 	int		left_fork;
 	int		last_meal;
