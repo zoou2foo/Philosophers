@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/08 14:49:48 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/08 15:34:26 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ typedef struct s_philo{ //struct for each philo; need to add id?
 	int					right_fork;
 	int					left_fork;
 	int					last_meal;
-	struct s_data		*data;
+	struct s_data		*data; //checker l'allocation
 	pthread_t			philos[200]; //a revoir si je veux le faire; malloc
 }						t_philo;
 //threads philos[200];
@@ -49,7 +49,7 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	int				time_to_sleep;
 	int				nb_to_eat;
 	pthread_mutex_t	forks;
-	struct s_philo			*philo;
+	struct s_philo			*philo; //checker l'allocation
 }					t_data;
 
 /*		PARSING 		*/
