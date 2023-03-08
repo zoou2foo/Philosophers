@@ -60,7 +60,7 @@ endif
 
 # Compiler and flags
 CC		=	gcc
-CFLAGS	=	-Wall -Werror -Wextra
+CFLAGS	=	-Wall -Werror -Wextra -lpthread
 RM		=	rm -rf
 MD		=	mkdir -p
 INCLUDE =	-I includes
