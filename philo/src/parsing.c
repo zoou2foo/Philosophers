@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:17:01 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/03 09:07:43 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/08 13:53:43 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,20 @@
 int	check_args(char **str)
 {
 	int	i;
+	int	j;
 
 	i = 1;
 	while (str[i])
 	{
-		if (!(str[i][0] >= 48 && str[i][0] <= 57))
+		j = 0;
+		while (str[i][j])
 		{
-			printf("%s\n", ERR_TYPE_ARGS);
-			exit(EXIT_FAILURE);
+			if (!(str[i][j] >= 48 && str[i][j] <= 57))
+			{
+				printf("%s\n", ERR_TYPE_ARGS);
+				return (1);
+			}
+			j++;
 		}
 		i++;
 	}
@@ -39,7 +45,7 @@ int	check_len(char **str)
 		if (ft_strlen(str[i]) > 6)
 		{
 			printf("%s\n", ERR_INT);
-			exit(EXIT_FAILURE);
+			return (1);
 		}
 		i++;
 	}
@@ -57,10 +63,10 @@ void	setup_datastruct(t_data *data, char **str)
 		data->nb_to_eat = ft_atoi(str[5]);
 		printf("Nb de fois pour manger: %d\n", data->nb_to_eat);
 	}
-	printf("Nb de philos: %d\n", data->nb_philos);
-	printf("Temps pour mourir: %d\n", data->time_to_death);
-	printf("Temps pour manger: %d\n", data->time_to_eat);
-	printf("Temps pour dormir: %d\n", data->time_to_sleep);
+	// printf("Nb de philos: %d\n", data->nb_philos);
+	// printf("Temps pour mourir: %d\n", data->time_to_death);
+	// printf("Temps pour manger: %d\n", data->time_to_eat);
+	// printf("Temps pour dormir: %d\n", data->time_to_sleep);
 }
 
 void	parsing(char **str, t_data *data) //time to check args and do atoi with args
@@ -73,7 +79,7 @@ void	parsing(char **str, t_data *data) //time to check args and do atoi with arg
 			if (data->nb_philos < 1 || data->nb_philos > 200)
 			{
 				printf("%s\n", ERR_PHILO);
-				exit(EXIT_FAILURE);
+				return ;
 			}
 		}
 	}
