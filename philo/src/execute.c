@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/09 13:42:39 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/09 16:57:30 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,17 @@
 
 void	*routine(void *arg)
 {
-	t_data	*data;
-	int		i;
+	t_data	*philo;
 
-	i = 0;
-	data = (t_data *)arg;
-	printf("time to eat: %d\n", data->time_to_eat);
-	while(i < data->time_to_eat)
+	philo = (t_data *)arg;
+	while (1)
 	{
 		pthread_mutex_lock(&data->forks);
-		printf("philo %d eat\n", i);
-		usleep(100000);
+		printf(" eat\n");
+		usleep(200000);
 		pthread_mutex_unlock(&data->forks);
-		i++;
+		if (data->time_to_eat < data->elapsed_time_ms)
+			break ;
 	}
 	return (NULL);
 }
@@ -38,12 +36,15 @@ void	execute(t_data *data)
 	int		i;
 	t_philo	philo;
 
-	i = 1;
+	i = 0;
+	philo = data->philo;
 	pthread_mutex_init(&data->forks, NULL);
 	while (i <= data->nb_philos)
 	{
-		printf("thread no: %d\n", i);
-		if (pthread_create(&philo.philos[i], NULL, &routine, (void *)data) != 0)
+		philo.id = i;
+		time_stamp(data);
+		printf("thread no: %d ", i);
+		if (pthread_create(&philo.philos[i], NULL, &routine, (void *)philo) != 0)
 		{
 			printf("%s\n", ERR_THREAD);
 		}
