@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/08 15:30:47 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/09 13:42:39 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,12 @@ void	*routine(void *arg)
 
 	i = 0;
 	data = (t_data *)arg;
-	while(i < data->nb_philos)
+	printf("time to eat: %d\n", data->time_to_eat);
+	while(i < data->time_to_eat)
 	{
 		pthread_mutex_lock(&data->forks);
 		printf("philo %d eat\n", i);
-		usleep(500000);
+		usleep(100000);
 		pthread_mutex_unlock(&data->forks);
 		i++;
 	}
@@ -41,6 +42,7 @@ void	execute(t_data *data)
 	pthread_mutex_init(&data->forks, NULL);
 	while (i <= data->nb_philos)
 	{
+		printf("thread no: %d\n", i);
 		if (pthread_create(&philo.philos[i], NULL, &routine, (void *)data) != 0)
 		{
 			printf("%s\n", ERR_THREAD);
