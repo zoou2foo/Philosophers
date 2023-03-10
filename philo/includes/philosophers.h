@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/09 17:02:43 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/10 13:56:10 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,21 +40,21 @@ typedef struct s_philo{ //struct for each philo; need to add id?
 	int					right_fork;
 	int					left_fork;
 	int					last_meal;
-	pthread_mutex_t		forks; //each philo will need its own. Now should I create a left and right?
+	pthread_mutex_t		forks[200]; //each philo will need its own. Now should I create a left and right?
 	struct s_data		*data; //checker l'allocation
 	pthread_t			philos[200]; //a revoir si je veux le faire; malloc
 }						t_philo;
 //threads philos[200];
 
 typedef struct s_data{ //parameters needed for simulation (rules)
-	int				nb_philos;
-	int				time_to_death;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				nb_to_eat;
-	long			elapsed_time_ms;
+	int						nb_philos;
+	int						time_to_death;
+	int						time_to_eat;
+	int						time_to_sleep;
+	int						nb_to_eat;
+	long					elapsed_time_ms;
 	struct s_philo			*philo; //checker l'allocation
-}					t_data;
+}							t_data;
 
 /*		PARSING 		*/
 void	parsing(char **str, t_data *data);

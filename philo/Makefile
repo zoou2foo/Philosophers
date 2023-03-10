@@ -61,6 +61,7 @@ endif
 # Compiler and flags
 CC		=	gcc
 CFLAGS	=	-Wall -Werror -Wextra
+RACE_F	=	-fsanitize=thread
 RM		=	rm -rf
 MD		=	mkdir -p
 INCLUDE =	-I includes
