@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/13 10:42:19 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/13 10:58:20 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	*routine(void *arg)
 	{
 		//only to eat
 		pthread_mutex_lock(&(philo->forks[philo->id % philo->data->nb_philos]));
+		printf("looking for the segfault: in the routine\n"); //debug
 		printf("Philo %d has taken a fork\n", philo->id);
 		pthread_mutex_lock(&(philo->forks[(philo->id + 1) % philo->data->nb_philos]));
 		printf("Philo %d has taken a fork\n", philo->id);
@@ -46,15 +47,15 @@ void	execute(t_data *data)
 	while (i <= data->nb_philos)
 	{
 		pthread_mutex_init(&data->philo->forks[i], NULL);
-		data->philo->id = i;
 		//time_stamp(data);
 		printf("thread no: %d \n", i);
+		data->philo->id = i;
 		if (pthread_create(&data->philo[i].philos, NULL, &routine, (void *)data->philo) != 0)
 		{
 			printf("%s\n", ERR_THREAD);
 		}
 		//usleep(1000000); //need to redo another function; "smartsleep"
-		printf("looking for the segfault: WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY!!!!!!!!!!!!!\n");
+		printf("looking for the segfault: WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY!!!!!!!!!!!!!\n"); //debug
 		if (pthread_join(data->philo[i].philos, NULL) != 0)
 			exit (1); //function to return
 		i++;
