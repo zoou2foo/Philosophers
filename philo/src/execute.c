@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/13 10:58:20 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/13 11:19:49 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ void	*routine(void *arg)
 	while (1)
 	{
 		//only to eat
-		pthread_mutex_lock(&(philo->forks[philo->id % philo->data->nb_philos]));
 		printf("looking for the segfault: in the routine\n"); //debug
+		pthread_mutex_lock(&(philo->forks[philo->id % philo->data->nb_philos]));
 		printf("Philo %d has taken a fork\n", philo->id);
 		pthread_mutex_lock(&(philo->forks[(philo->id + 1) % philo->data->nb_philos]));
 		printf("Philo %d has taken a fork\n", philo->id);
