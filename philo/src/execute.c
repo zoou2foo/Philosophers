@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/13 16:36:50 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/13 16:44:36 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,3 +63,5 @@ void	execute(t_data *data)
 	if (pthread_join(data->philo[i].philos, NULL) != 0)
 		return ; //function to return
 }
+
+//compiler avec fsanitize pour voir data race =thread. ou =address (a verifier)
