@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
+/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/13 20:25:43 by valeriejean      ###   ########.fr       */
+/*   Updated: 2023/03/14 09:17:34 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	*routine(void *arg)
 	{
 		//only to eat
 		//printf("id: %d \n", philo->id); //debug
+		time_stamp(philo->data);
 		pthread_mutex_lock(&(philo->data->forks_mutex[philo->id]));
 		printf("Philo %d has taken a fork\n", philo->id);
 		pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id + 1) % philo->data->nb_philos]));
@@ -44,11 +45,11 @@ void	execute(t_data *data)
 {
 	int		i;
 
-	i = -1;
+	i = 0;
 	while (i++ < data->nb_philos)
 	{
 		pthread_mutex_init(&data->forks_mutex[i], NULL);
-		//time_stamp(data); probably here to start timer
+		//time_stamp(data); //probably here to start timer
 		data->philo_struct[i].id = i;
 		if (pthread_create(&(data->philo_struct[i].philo_th), NULL, routine, &(data->philo_struct[i])) != 0)
 		{
@@ -57,7 +58,7 @@ void	execute(t_data *data)
 		}
 		usleep(1000000); //need to redo another function; "smartsleep"
 	}
-	i = -1;
+	i = 0;
 	while (i++ < data->nb_philos)
 	{
 		if (pthread_join(data->philo_struct[i].philo_th, NULL) != 0)

@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:31:45 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/09 15:33:33 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/14 09:17:16 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,11 @@ void	time_stamp(t_data *data)
 {
 	struct timeval	zero_time;
 	struct timeval	current_time;
-	int				i;
+	// int				i;
 
-	i = 0;
+	// i = -1;
 	gettimeofday(&zero_time, NULL);
-	while (i <= data->time_to_eat)
+	while (1)
 	{
 		gettimeofday(&current_time, NULL);
 		data->elapsed_time_ms = (current_time.tv_sec - zero_time.tv_sec) * 1000 + (current_time.tv_usec - zero_time.tv_usec) / 1000;
