@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/14 09:17:34 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/14 14:54:04 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,24 @@
 void	*routine(void *arg)
 {
 	t_philo	*philo;
+	unsigned long long	start_time;
 
 	philo = (t_philo *)arg;
-
+	start_time = time_stamp();
 	while (1)
 	{
 		//only to eat
 		//printf("id: %d \n", philo->id); //debug
-		time_stamp(philo->data);
+		//time_stamp(philo->data);
 		pthread_mutex_lock(&(philo->data->forks_mutex[philo->id]));
-		printf("Philo %d has taken a fork\n", philo->id);
+		printf("%lld - Philo %d has taken a fork\n", time_stamp() - start_time, philo->id);
 		pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id + 1) % philo->data->nb_philos]));
-		printf("Philo %d has taken a fork\n", philo->id);
-		printf("Philo %d is eating\n", philo->id);
+		printf("%lld - Philo %d has taken a fork\n", time_stamp() - start_time, philo->id);
+		printf("%lld - Philo %d is eating\n", time_stamp() - start_time, philo->id);
 		usleep(philo->data->time_to_eat); //put in a function to modify the state too
 		pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id]));
 		pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id + 1) % philo->data->nb_philos]));
-		printf("Philo %d is sleeping\n", philo->id);
+		printf("%lld - Philo %d is sleeping\n", time_stamp() - start_time, philo->id);
 		usleep(philo->data->time_to_sleep);
 		//if (philo->data->time_to_eat < philo->data->elapsed_time_ms) //si les philos ont déjà mangé au moins nb_to_eat; temps actuel - l'heure qui a mange(la derniere fois) = res a comparer au time_to_eat
 		//	break ;

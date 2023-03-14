@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:31:45 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/14 09:17:16 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/14 14:52:52 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,21 +49,29 @@ int	ft_atoi(char *str) //change args in int
 	return (result * sign);
 }
 
-void	time_stamp(t_data *data)
-{
-	struct timeval	zero_time;
-	struct timeval	current_time;
-	// int				i;
+// void	time_stamp(t_data *data)
+// {
+// 	struct timeval	zero_time;
+// 	struct timeval	current_time;
+// 	// int				i;
 
-	// i = -1;
-	gettimeofday(&zero_time, NULL);
-	while (1)
-	{
-		gettimeofday(&current_time, NULL);
-		data->elapsed_time_ms = (current_time.tv_sec - zero_time.tv_sec) * 1000 + (current_time.tv_usec - zero_time.tv_usec) / 1000;
-		printf("%ld - ", data->elapsed_time_ms);
-		usleep(500000);
-	}
+// 	// i = -1;
+// 	gettimeofday(&zero_time, NULL);
+// 	while (1)
+// 	{
+// 		gettimeofday(&current_time, NULL);
+// 		data->elapsed_time_ms = (current_time.tv_sec - zero_time.tv_sec) * 1000 + (current_time.tv_usec - zero_time.tv_usec) / 1000;
+// 		printf("%ld - ", data->elapsed_time_ms);
+// 		usleep(500000);
+// 	}
+// }
+
+unsigned long long	time_stamp(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return((unsigned long long) tv.tv_sec * 1000 + (unsigned long long)tv.tv_usec / 1000);
 }
 
 /*
