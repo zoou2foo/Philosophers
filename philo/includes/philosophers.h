@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/13 15:48:32 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/13 19:52:56 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,8 @@ typedef enum {
 typedef struct s_philo{ //struct for each philo; need to add id?
 	state_t				state; //to keep track of their state; see above
 	int					id; //philo's id
-	int					right_fork;
-	int					left_fork;
-	int					last_meal;
-	struct s_data		*data; //checker l'allocation
-	pthread_t			philos; //comme c'est une struct pour chaque philo; c'est un thread
+	struct s_data		*data; //give access to info in data struct
+	pthread_t			philo_th; //comme c'est une struct pour chaque philo; c'est un thread
 }						t_philo;
 //threads philos[200];
 
@@ -52,8 +49,8 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	int						time_to_sleep;
 	int						nb_to_eat;
 	long					elapsed_time_ms;
-	pthread_mutex_t			forks[200]; //each philo will need its own. Le philo a besoin de prendre la fourchette de son voisin. Pas plus de 200 fourchettes, car pas plus que 200 philos. Le philo ne peut pas avoir acces aux 200, donc, ne doit pas etre dans la struc du philo
-	struct s_philo			philo[200]; //chaque philo est une STRUCT pour avoir acces aux info(forks, son id, etc..)
+	pthread_mutex_t			forks_mutex[200]; //each philo will need its own. Le philo a besoin de prendre la fourchette de son voisin. Pas plus de 200 fourchettes, car pas plus que 200 philos. Le philo ne peut pas avoir acces aux 200, donc, ne doit pas etre dans la struc du philo
+	struct s_philo			philo_struct[200]; //chaque philo est une STRUCT pour avoir acces aux info(forks, son id, etc..)
 }							t_data;
 
 /*		PARSING 		*/
