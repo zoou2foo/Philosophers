@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/15 15:48:02 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/15 16:02:33 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void	execute(t_data *data)
 	pthread_mutex_init(&data->print_mutex, NULL);
 	while (i < data->nb_philos)
 	{
-		init_philo(data, i);
+		init_philo(data, i);  //initialise les mutex AVANT de faire la boucle pour les threads
 		i++;
 	}
 	i = 0;
