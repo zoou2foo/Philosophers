@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
+/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:31:45 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/14 14:52:52 by valeriejean      ###   ########.fr       */
+/*   Updated: 2023/03/15 12:40:21 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,35 +49,24 @@ int	ft_atoi(char *str) //change args in int
 	return (result * sign);
 }
 
-// void	time_stamp(t_data *data)
-// {
-// 	struct timeval	zero_time;
-// 	struct timeval	current_time;
-// 	// int				i;
-
-// 	// i = -1;
-// 	gettimeofday(&zero_time, NULL);
-// 	while (1)
-// 	{
-// 		gettimeofday(&current_time, NULL);
-// 		data->elapsed_time_ms = (current_time.tv_sec - zero_time.tv_sec) * 1000 + (current_time.tv_usec - zero_time.tv_usec) / 1000;
-// 		printf("%ld - ", data->elapsed_time_ms);
-// 		usleep(500000);
-// 	}
-// }
-
-unsigned long long	time_stamp(void)
+time_t	time_stamp(void)
 {
-	struct timeval	tv;
+	struct timeval	current_time;
 
-	gettimeofday(&tv, NULL);
-	return((unsigned long long) tv.tv_sec * 1000 + (unsigned long long)tv.tv_usec / 1000);
+	gettimeofday(&current_time, NULL);
+	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000)); //tv_sec (seconds) tv_usec(microseconds) => formula to put it in milliseconds
 }
 
-/*
-void	smart_sleep()
+
+
+void	ms_sleep(int ms)
 {
+	time_t	goal;
 
+	goal = time_stamp() + ms;
+	while (1)
+	{
+		if (time_stamp() >= goal)
+			break ;
+	}
 }
-
-*/
