@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/15 12:35:33 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/16 11:32:24 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef enum {
 typedef struct s_philo{ //struct for each philo; need to add id?
 	state_t				state; //to keep track of their state; see above
 	int					id; //philo's id
+	time_t				last_meal;
 	struct s_data		*data; //give access to info in data struct
 	pthread_t			philo_th; //comme c'est une struct pour chaque philo; c'est un thread
 }						t_philo;

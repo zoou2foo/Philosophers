@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:17:01 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/08 13:53:43 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/16 11:40:20 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,7 @@ void	setup_datastruct(t_data *data, char **str)
 	data->time_to_eat = ft_atoi(str[3]);
 	data->time_to_sleep = ft_atoi(str[4]);
 	if (str[5] != NULL)
-	{
 		data->nb_to_eat = ft_atoi(str[5]);
-		printf("Nb de fois pour manger: %d\n", data->nb_to_eat);
-	}
-	// printf("Nb de philos: %d\n", data->nb_philos);
-	// printf("Temps pour mourir: %d\n", data->time_to_death);
-	// printf("Temps pour manger: %d\n", data->time_to_eat);
-	// printf("Temps pour dormir: %d\n", data->time_to_sleep);
 }
 
 void	parsing(char **str, t_data *data) //time to check args and do atoi with args
