@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/16 12:54:20 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/16 16:07:48 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,28 +26,30 @@ void	print_message(t_philo *philo, int flag)
 	else if (flag == 3)
 		printf("%ld - Philo %d is sleeping\n", time_stamp() - philo->data->start_time, philo->id);
 	else if (flag == 4)
-		printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
+		printf("%ld - Philo %d is thinking\n", time_stamp() - philo->data->start_time, philo->id);
 	pthread_mutex_unlock(&philo->data->print_mutex);
 }
 
-// bool	check_if_philo_dead(t_philo *philo)
-// {
-// 	if (time_stamp() - philo->last_meal > philo->data->time_to_eat)
-// 		return (false); //philo died
-// 	return (true); //not dead
-// }
+bool	check_if_philo_dead(t_data *data) //ne pas oublier the unlock les mutex quand je break
+{
+	if (time_stamp() - data->philo_struct->last_meal > data->time_to_death)
+		return (false); //philo died
+	return (true); //not dead
+}
 
 void	*routine(void *arg)
 {
 	t_philo	*philo;
 	int		nb_time_ate;
-	int		is_dead;
+	// int		is_dead;
 
 	philo = (t_philo *)arg;
 	nb_time_ate = 0;
-	is_dead = 0;
+	// is_dead = 0;
 	//mettre if impair dort (temps de manger) si pair run; dernier dort 2 fois si impair(temps de manger)
-	while (!is_dead) //ou mettre un flag tant que no death => !is_dead (setup at 0)
+	if (philo->id % 2 == 0)
+		usleep(1000);
+	while (1) //ou mettre un flag tant que no death => !is_dead (setup at 0)
 	{
 		// if (check_if_philo_dead(philo) == false)  //does not work
 		// {
@@ -64,6 +66,7 @@ void	*routine(void *arg)
 		pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
 		print_message(philo, 3);//printf(" - Philo %d is sleeping\n", philo->id); //get time(current time - start time)
 		ms_sleep(philo->data->time_to_sleep);
+		print_message(philo, 4); //think message
 		if (philo->data->nb_to_eat)
 			nb_time_ate++;
 		if (nb_time_ate == philo->data->nb_to_eat)
@@ -73,8 +76,8 @@ void	*routine(void *arg)
 		//	another if to check: // Check if a philo died et si les philos ont déjà mangé au moins nb_to_eat; temps actuel - l'heure qui a mange(la derniere fois) = res a comparer au time_to_eat
 		// 	break ;
 	} // when out of the loop, set is_dead = 1
-	is_dead = 1;
-	print_message(philo, 4);
+	// is_dead = 1; //maybe not the right place
+	// print_message(philo, 4);//maybe not the right place
 	return (NULL);
 }
 
@@ -110,6 +113,7 @@ void	execute(t_data *data)
 		i++;
 	}
 	i = 0;
+
 	while (i < data->nb_philos)
 	{
 		if (pthread_join(data->philo_struct[i].philo_th, NULL) != 0)

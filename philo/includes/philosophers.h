@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/16 11:32:24 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/16 15:53:46 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,5 +66,6 @@ void	ms_sleep(int ms);
 
 /*		EXECUTE		*/
 void	execute(t_data *data);
+bool	check_if_philo_dead(t_data *data);
 
 #endif

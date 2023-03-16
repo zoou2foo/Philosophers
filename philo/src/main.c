@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
+/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:05:38 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/14 14:17:30 by valeriejean      ###   ########.fr       */
+/*   Updated: 2023/03/16 16:04:09 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ int	main(int ac, char **av)
 	{
 		parsing(av, &data); //probably better to send it in a while loop?
 		execute(&data);
+		if (check_if_philo_dead(&data) == false)
+		{
+			printf("%ld - Philo %d is dead\n", time_stamp() - data.start_time, data.philo_struct->id);
+			return (1);
+		}
 	}
 	return (0);
 }
