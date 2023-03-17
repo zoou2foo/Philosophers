@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/16 15:53:46 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/17 13:36:19 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@
 typedef enum {
 	THINKING,
 	EATING,
-	SLEEPING
+	SLEEPING,
+	DEAD
 }	state_t;
 typedef struct s_philo{ //struct for each philo; need to add id?
 	state_t				state; //to keep track of their state; see above
@@ -45,7 +46,8 @@ typedef struct s_philo{ //struct for each philo; need to add id?
 
 typedef struct s_data{ //parameters needed for simulation (rules)
 	int						nb_philos;
-	int						time_to_death;
+	int						nb_to_ate;
+	int						time_to_die;
 	int						time_to_eat;
 	int						time_to_sleep;
 	int						nb_to_eat;
@@ -66,6 +68,6 @@ void	ms_sleep(int ms);
 
 /*		EXECUTE		*/
 void	execute(t_data *data);
-bool	check_if_philo_dead(t_data *data);
+bool	check_if_philo_dead(t_data *data, int i);
 
 #endif

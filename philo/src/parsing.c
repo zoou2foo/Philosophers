@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:17:01 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/16 11:40:20 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/17 10:36:07 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	check_len(char **str)
 void	setup_datastruct(t_data *data, char **str)
 {
 	data->nb_philos = ft_atoi(str[1]);
-	data->time_to_death = ft_atoi(str[2]);
+	data->time_to_die = ft_atoi(str[2]);
 	data->time_to_eat = ft_atoi(str[3]);
 	data->time_to_sleep = ft_atoi(str[4]);
 	if (str[5] != NULL)
