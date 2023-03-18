@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/17 14:27:48 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/18 15:15:06 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	print_message(t_philo *philo, int flag)
 	{
 		printf("%ld - Philo %d is eating\n", time_stamp() - philo->data->start_time, philo->id);
 		philo->last_meal = time_stamp() - philo->data->start_time;
+		philo->nb_meals_enjoyed++;
 	}
 	else if (flag == 3)
 		printf("%ld - Philo %d is sleeping\n", time_stamp() - philo->data->start_time, philo->id);
@@ -37,7 +38,7 @@ bool	check_if_philo_dead(t_data *data, int i) //ne pas oublier the unlock les mu
 {
 	if (((time_stamp() - data->start_time) - data->philo_struct[i].last_meal) >= data->time_to_die)
 	{
-		data->philo_struct->state = DEAD;
+		data->philo_struct[i].state = DEAD;
 		return (false); //philo died
 	}
 	return (true); //not dead
@@ -47,10 +48,8 @@ bool	check_if_philo_dead(t_data *data, int i) //ne pas oublier the unlock les mu
 void	*routine(void *arg)
 {
 	t_philo	*philo;
-	int		nb_time_ate;
 
 	philo = (t_philo *)arg;
-	nb_time_ate = 0;
 	if (philo->id % 2 == 0)
 		usleep(1000);
 	while (1) //philo->state != DEAD; maybe put state in my data struct
@@ -74,10 +73,11 @@ void	*routine(void *arg)
 		print_message(philo, 3);//printf(" - Philo %d is sleeping\n", philo->id); //get time(current time - start time)
 		ms_sleep(philo->data->time_to_sleep);
 		print_message(philo, 4); //think message
-		// if (philo->data->nb_to_eat) //need to check where to put it
-		// 	nb_time_ate++;
-		// if (nb_time_ate == philo->data->nb_to_eat) //need to where to put it
-		// 	break ;
+		if (philo->data->nb_to_eat > 0 && philo->nb_meals_enjoyed >= philo->data->nb_to_eat)
+        {
+            philo->state = FULL;
+            break ;
+        }
 		// if time_to_die < current_time -> philo DIED
 		//	print_message -> philo id died. -> break
 		//	another if to check: // Check if a philo died et si les philos ont déjà mangé au moins nb_to_eat; temps actuel - l'heure qui a mange(la derniere fois) = res a comparer au time_to_eat
@@ -137,9 +137,32 @@ void	execute(t_data *data)
 		usleep(100); //to give time for each philo to take a fork
 		i++;
 	}
-	if (watching_for_dead(data) == 1)//put the fucking function to check if dead
-		return ; //I don't think I'm calling it at the right time
-	i = 0;
+	while (1)
+	{
+		i = 0;
+		while (i < data->nb_philos)
+		{
+			pthread_mutex_lock(&data->print_mutex);
+			if (data->philo_struct[i].nb_meals_enjoyed >= data->nb_to_eat)
+			{
+				printf("%ld - Philo %d has eaten enough and will stop eating\n", time_stamp() - data->start_time, data->philo_struct[i].id);
+				pthread_mutex_unlock(&data->print_mutex);
+				i++;
+			}
+			else if (data->philo_struct[i].state == DEAD)
+			{
+				printf("%ld - Philo %d is dead\n", time_stamp() - data->start_time, data->philo_struct[i].id);
+				pthread_mutex_unlock(&data->print_mutex);
+				return ;
+			}
+			else
+			{
+				pthread_mutex_unlock(&data->print_mutex);
+				usleep(1000);
+				i = 0;
+			}
+		}
+	}
 	while (i < data->nb_philos)//loop to join(wait) each thread  -- TRYING to figure out the dead mess: data->philo_struct[i].state != DEAD
 	{
 		if (pthread_join(data->philo_struct[i].philo_th, NULL) != 0)

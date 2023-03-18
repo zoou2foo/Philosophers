@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/17 13:36:19 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/18 14:25:37 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,14 @@ typedef enum {
 	THINKING,
 	EATING,
 	SLEEPING,
+	FULL,
 	DEAD
 }	state_t;
 typedef struct s_philo{ //struct for each philo; need to add id?
 	state_t				state; //to keep track of their state; see above
 	int					id; //philo's id
 	time_t				last_meal;
+	int					nb_meals_enjoyed;
 	struct s_data		*data; //give access to info in data struct
 	pthread_t			philo_th; //comme c'est une struct pour chaque philo; c'est un thread
 }						t_philo;
