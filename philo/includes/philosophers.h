@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/20 11:57:01 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/20 14:04:11 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	int						time_to_eat;
 	int						time_to_sleep;
 	int						nb_to_eat;
+	int						someone_is_dead;
 	time_t					start_time;
 	pthread_mutex_t			death_mutex;
 	pthread_mutex_t			print_mutex;
@@ -70,6 +71,5 @@ void	ms_sleep(int ms);
 
 /*		EXECUTE		*/
 void	execute(t_data *data);
-bool	check_if_philo_dead(t_data *data, int i); //I could delete it from here
 
 #endif

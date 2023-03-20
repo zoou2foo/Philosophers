@@ -6,15 +6,17 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/20 12:00:47 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/20 14:25:33 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
 //If one philo needs to be execute separately as it will have only one fork
-void	print_message(t_philo *philo, int flag)
+void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour function qui s'occupe du state, une autre pour print
 {
+	if (philo->data->someone_is_dead == 1)
+		return ;
 	pthread_mutex_lock(&philo->data->print_mutex);
 	if (flag == 1)
 		printf("%ld - Philo %d has taken a fork\n", time_stamp() - philo->data->start_time, philo->id); //get time(current time - start time) APRES mutex
@@ -33,14 +35,19 @@ void	print_message(t_philo *philo, int flag)
 		philo->state = THINKING;
 		printf("%ld - Philo %d is thinking\n", time_stamp() - philo->data->start_time, philo->id);
 	}
+	else if (flag == 5)
+	{
+		philo->state = DEAD;
+		printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
+		philo->data->someone_is_dead = 1;
+	}
 	pthread_mutex_unlock(&philo->data->print_mutex);
 }
 
-bool	check_if_philo_dead(t_data *data, int i) //unlock mutex when I break
+bool	check_if_philo_dead(t_philo *philo) //unlock mutex when I break
 {
-	if (((time_stamp() - data->start_time) - data->philo_struct[i].last_meal) >= data->time_to_die)
+	if (((time_stamp() - philo->data->start_time) - philo->last_meal) >= philo->data->time_to_die)
 	{
-		data->philo_struct[i].state = DEAD;
 		return (false); //philo died
 	}
 	return (true); //not dead
@@ -56,6 +63,14 @@ void	*routine(void *arg)
 		usleep(1000);
 	while (1) //philo->state != DEAD;
 	{
+		if (check_if_philo_dead(philo) == false)
+		{
+			pthread_mutex_lock(&(philo->data->death_mutex));//maybe inutile
+			print_message(philo, 5);
+			pthread_mutex_unlock(&(philo->data->death_mutex)); //maybe inutile
+			return (NULL); //terminate thread
+		}
+		//need to add a check si les forks already lock or not.
 		pthread_mutex_lock(&(philo->data->forks_mutex[philo->id - 1]));
 		print_message(philo, 1);
 		pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
@@ -65,12 +80,20 @@ void	*routine(void *arg)
 		philo->nb_meals_enjoyed++;
 		// if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
 		// 	return (NULL); //terminate thread
-		ms_sleep(philo->data->time_to_eat); //put in a function to modify the state too
+		if (philo->data->time_to_die < philo->data->time_to_eat)
+			ms_sleep(philo->data->time_to_die);
+		else
+			ms_sleep(philo->data->time_to_eat); //put in a function to modify the state too
 		pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 		pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
 		print_message(philo, 3);//printf(" - Philo %d is sleeping\n", philo->id);
-		ms_sleep(philo->data->time_to_sleep);
-		print_message(philo, 4); //think message
+		if (philo->data->time_to_die < philo->data->time_to_eat + philo->data->time_to_sleep) //->sleep time to die
+			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
+		else
+		{
+			ms_sleep(philo->data->time_to_sleep);
+			print_message(philo, 4); //think message
+		}
 	}
 	return (NULL);
 }
@@ -79,6 +102,7 @@ void	init_philo(t_data *data, int i)
 {
 	data->philo_struct[i].id = i + 1;
 	data->philo_struct[i].data = data;
+	data->philo_struct[i].last_meal = 0;
 	pthread_mutex_init(&data->forks_mutex[i], NULL);
 }
 
@@ -104,13 +128,6 @@ void	execute(t_data *data)
 			return ;
 		}
 		usleep(100); //to give time for each philo to take a fork
-		if (check_if_philo_dead(data, i) == false)
-		{
-			pthread_mutex_lock(&(data->death_mutex));
-			printf("%ld - Philo %d is dead\n", time_stamp() - data->start_time, data->philo_struct[i].id);
-			pthread_mutex_unlock(&(data->death_mutex));
-			return ; //terminate thread
-		}
 		i++;
 	}
 	i = 0;

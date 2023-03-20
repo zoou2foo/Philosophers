@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:17:01 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/17 10:36:07 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/20 14:04:43 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ void	setup_datastruct(t_data *data, char **str)
 	data->time_to_die = ft_atoi(str[2]);
 	data->time_to_eat = ft_atoi(str[3]);
 	data->time_to_sleep = ft_atoi(str[4]);
+	data->someone_is_dead = 0;
 	if (str[5] != NULL)
 		data->nb_to_eat = ft_atoi(str[5]);
 }
