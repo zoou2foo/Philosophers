@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/20 14:25:33 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/20 15:28:34 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	*routine(void *arg)
 			pthread_mutex_unlock(&(philo->data->death_mutex)); //maybe inutile
 			return (NULL); //terminate thread
 		}
-		//need to add a check si les forks already lock or not.
+		//!!need to add a check si les forks already lock or not.!! <=
 		pthread_mutex_lock(&(philo->data->forks_mutex[philo->id - 1]));
 		print_message(philo, 1);
 		pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
