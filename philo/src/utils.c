@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:31:45 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/15 12:40:21 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/21 10:35:10 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ time_t	time_stamp(void)
 	gettimeofday(&current_time, NULL);
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000)); //tv_sec (seconds) tv_usec(microseconds) => formula to put it in milliseconds
 }
-
-
 
 void	ms_sleep(int ms)
 {

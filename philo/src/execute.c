@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/20 15:28:34 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/21 10:34:38 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour 
 {
 	if (philo->data->someone_is_dead == 1)
 		return ;
-	pthread_mutex_lock(&philo->data->print_mutex);
 	if (flag == 1)
 		printf("%ld - Philo %d has taken a fork\n", time_stamp() - philo->data->start_time, philo->id); //get time(current time - start time) APRES mutex
 	else if (flag == 2)
@@ -41,7 +40,6 @@ void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour 
 		printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
 		philo->data->someone_is_dead = 1;
 	}
-	pthread_mutex_unlock(&philo->data->print_mutex);
 }
 
 bool	check_if_philo_dead(t_philo *philo) //unlock mutex when I break
@@ -60,22 +58,28 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
-		usleep(1000);
+		usleep(100);
 	while (1) //philo->state != DEAD;
 	{
 		if (check_if_philo_dead(philo) == false)
 		{
-			pthread_mutex_lock(&(philo->data->death_mutex));//maybe inutile
+			pthread_mutex_lock(&(philo->data->print_mutex));//maybe inutile
 			print_message(philo, 5);
-			pthread_mutex_unlock(&(philo->data->death_mutex)); //maybe inutile
+			pthread_mutex_unlock(&(philo->data->print_mutex)); //maybe inutile
 			return (NULL); //terminate thread
 		}
 		//!!need to add a check si les forks already lock or not.!! <=
 		pthread_mutex_lock(&(philo->data->forks_mutex[philo->id - 1]));
+		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 1);
+		pthread_mutex_unlock(&philo->data->print_mutex);
 		pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
+		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 1);//printf("- Philo %d has taken a fork\n", philo->id);
+		pthread_mutex_unlock(&philo->data->print_mutex);
+		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 2);//printf(" - Philo %d is eating\n", philo->id);
+		pthread_mutex_unlock(&philo->data->print_mutex);
 		philo->last_meal = time_stamp() - philo->data->start_time;
 		philo->nb_meals_enjoyed++;
 		// if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
@@ -86,13 +90,17 @@ void	*routine(void *arg)
 			ms_sleep(philo->data->time_to_eat); //put in a function to modify the state too
 		pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 		pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
+		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 3);//printf(" - Philo %d is sleeping\n", philo->id);
+		pthread_mutex_unlock(&philo->data->print_mutex);
 		if (philo->data->time_to_die < philo->data->time_to_eat + philo->data->time_to_sleep) //->sleep time to die
 			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
 		else
 		{
 			ms_sleep(philo->data->time_to_sleep);
+			pthread_mutex_lock(&philo->data->print_mutex);
 			print_message(philo, 4); //think message
+			pthread_mutex_unlock(&philo->data->print_mutex);
 		}
 	}
 	return (NULL);
@@ -112,8 +120,8 @@ void	execute(t_data *data)
 
 	i = 0;
 	data->start_time = time_stamp();//get the start time of the simulation
-	pthread_mutex_init(&data->print_mutex, NULL); //init my mutex to print_mess
-	pthread_mutex_init(&data->death_mutex, NULL); //init my mutex to die
+	pthread_mutex_init(&(data->print_mutex), NULL); //init my mutex to print_mess
+	//pthread_mutex_init(&(data->death_mutex), NULL); //init my mutex to die
 	while (i < data->nb_philos) //loop to initialize mutex for the forks
 	{
 		init_philo(data, i);  //initialise les mutex AVANT de faire la boucle pour les threads
@@ -143,14 +151,3 @@ void	execute(t_data *data)
 }
 
 //compiler avec fsanitize pour voir data race =thread. ou =address (a verifier)
-	// while (1)
-	// {
-	// 	pthread_mutex_lock(&data->print_mutex);
-	// 	if (data->philo_struct[i].state == DEAD)
-	// 	{
-	// 		printf("%ld - Philo %d is dead\n", time_stamp() - data->start_time, data->philo_struct[i].id);
-	// 		pthread_mutex_unlock(&data->print_mutex);
-	// 		break ;
-	// 	}
-	// 	//si flag existe, break; mutex. Lock avant et unlock apres
-	// }

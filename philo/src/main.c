@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
+/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:05:38 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/18 14:49:14 by valeriejean      ###   ########.fr       */
+/*   Updated: 2023/03/21 10:35:02 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,3 @@ int	main(int ac, char **av)
 	}
 	return (0);
 }
-
-		// if (check_if_philo_dead(&data) == false)
-		// {
-		// 	printf("%ld - Philo %d is dead\n", time_stamp() - data.start_time, data.philo_struct->id);
-		// 	return (1);
-		// }
