@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/21 10:34:38 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/21 11:21:29 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,18 @@ bool	check_if_philo_dead(t_philo *philo) //unlock mutex when I break
 	{
 		return (false); //philo died
 	}
+	else if (philo->data->nb_philos == 1)
+	{
+		pthread_mutex_lock(&(philo->data->forks_mutex[philo->id - 1]));
+		pthread_mutex_lock(&philo->data->print_mutex);
+		print_message(philo, 1); //printf("- Philo %d has taken a fork\n", philo->id);
+		pthread_mutex_unlock(&philo->data->print_mutex);
+		ms_sleep(philo->data->time_to_die);
+		return (false); //One philo will die after time_to_die as it doesn't have another fork
+	}
 	return (true); //not dead
 }
+
 
 
 void	*routine(void *arg)
@@ -59,23 +69,23 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
 		usleep(100);
-	while (1) //philo->state != DEAD;
+	while (1)
 	{
 		if (check_if_philo_dead(philo) == false)
 		{
-			pthread_mutex_lock(&(philo->data->print_mutex));//maybe inutile
+			pthread_mutex_lock(&(philo->data->print_mutex));//NEED IT to avoid data race
 			print_message(philo, 5);
-			pthread_mutex_unlock(&(philo->data->print_mutex)); //maybe inutile
-			return (NULL); //terminate thread
+			pthread_mutex_unlock(&(philo->data->print_mutex)); //NEED IT to avoid data race
+			return (NULL); //to terminate thread
 		}
 		//!!need to add a check si les forks already lock or not.!! <=
 		pthread_mutex_lock(&(philo->data->forks_mutex[philo->id - 1]));
 		pthread_mutex_lock(&philo->data->print_mutex);
-		print_message(philo, 1);
+		print_message(philo, 1); //printf("- Philo %d has taken a fork\n", philo->id);
 		pthread_mutex_unlock(&philo->data->print_mutex);
 		pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
 		pthread_mutex_lock(&philo->data->print_mutex);
-		print_message(philo, 1);//printf("- Philo %d has taken a fork\n", philo->id);
+		print_message(philo, 1);//printf("- Philo %d has taken a fork\n", philo->id celle de son voisin);
 		pthread_mutex_unlock(&philo->data->print_mutex);
 		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 2);//printf(" - Philo %d is eating\n", philo->id);
