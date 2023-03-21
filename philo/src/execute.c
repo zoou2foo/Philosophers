@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/21 14:58:56 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/21 16:55:43 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,20 @@ void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour 
 		printf("%ld - Philo %d is eating\n", time_stamp() - philo->data->start_time, philo->id);
 		philo->nb_meals_enjoyed++;
 		if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
+		{
 			philo->state = FULL;
-		printf("%ld - Philo %d state %u\n", time_stamp() - philo->data->start_time, philo->id, philo->state);
+			philo->data->nb_full_philos++; // increment the number of full philosophers
+			if(philo->data->nb_full_philos == philo->data->nb_philos) // check if all philosophers are full
+			{
+				pthread_mutex_lock(&philo->data->print_mutex);
+				printf("%ld - All philosophers have eaten enough\n", time_stamp() - philo->data->start_time);
+				pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]);
+				pthread_mutex_unlock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
+				pthread_mutex_unlock(&philo->data->print_mutex);
+				return ;
+			}
+			
+		}
 	}
 	else if (flag == 3)
 	{
@@ -77,7 +89,6 @@ bool	check_if_philo_full(t_philo *philo)
 	return (false);
 }
 
-
 void	*routine(void *arg)
 {
 	t_philo	*philo;
@@ -99,10 +110,12 @@ void	*routine(void *arg)
 		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 1); //printf("- Philo %d has taken a fork\n", philo->id);
 		pthread_mutex_unlock(&philo->data->print_mutex);
+		
 		pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
 		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 1);//printf("- Philo %d has taken a fork\n", philo->id celle de son voisin);
 		pthread_mutex_unlock(&philo->data->print_mutex);
+		
 		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 2);//printf(" - Philo %d is eating\n", philo->id);
 		pthread_mutex_unlock(&philo->data->print_mutex);
@@ -141,12 +154,11 @@ void	init_philo(t_data *data, int i)
 void	execute(t_data *data)
 {
 	int		i;
-	int		check_full;
 
 	i = 0;
-	check_full = 0;
 	data->start_time = time_stamp();//get the start time of the simulation
 	pthread_mutex_init(&(data->print_mutex), NULL); //init my mutex to print_mess
+	pthread_mutex_init(&(data->full_mutex), NULL);
 	//pthread_mutex_init(&(data->death_mutex), NULL); //init my mutex to die
 	while (i < data->nb_philos) //loop to initialize mutex for the forks
 	{
@@ -164,16 +176,14 @@ void	execute(t_data *data)
 		usleep(100); //to give time for each philo to take a fork
 		i++;
 	}
-	i = 0;
 	while (1)
 	{
-		if (data->philo_struct[i].state == FULL)
-			check_full += 1;
-		if (check_full == data->nb_philos) //check_if_full un peu comme check if dead: mort ou FULL
+		pthread_mutex_lock(&data->full_mutex); //wait for all philo to be full
+		if (data->nb_full_philos == data->nb_philos)
+		{
+			pthread_mutex_unlock(&data->full_mutex);
 			break ;
-		i++;
-		if (i == data->nb_philos)
-			i = 0;
+		}
 	}
 	i = 0;
 	while (i < data->nb_philos)//loop to join(wait) each thread
