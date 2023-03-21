@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/21 11:21:29 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/21 14:58:56 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour 
 	{
 		philo->state = EATING;
 		printf("%ld - Philo %d is eating\n", time_stamp() - philo->data->start_time, philo->id);
+		philo->nb_meals_enjoyed++;
+		if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
+			philo->state = FULL;
+		printf("%ld - Philo %d state %u\n", time_stamp() - philo->data->start_time, philo->id, philo->state);
 	}
 	else if (flag == 3)
 	{
@@ -40,6 +44,10 @@ void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour 
 		printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
 		philo->data->someone_is_dead = 1;
 	}
+	// else if (flag == 6)
+	// {
+	// 	printf("%ld - All philosophers have eaten enough\n", time_stamp() - philo->data->start_time);
+	// }
 }
 
 bool	check_if_philo_dead(t_philo *philo) //unlock mutex when I break
@@ -60,6 +68,14 @@ bool	check_if_philo_dead(t_philo *philo) //unlock mutex when I break
 	return (true); //not dead
 }
 
+bool	check_if_philo_full(t_philo *philo)
+{
+	if (philo->state == FULL)
+	{
+		return (true);
+	}
+	return (false);
+}
 
 
 void	*routine(void *arg)
@@ -91,13 +107,10 @@ void	*routine(void *arg)
 		print_message(philo, 2);//printf(" - Philo %d is eating\n", philo->id);
 		pthread_mutex_unlock(&philo->data->print_mutex);
 		philo->last_meal = time_stamp() - philo->data->start_time;
-		philo->nb_meals_enjoyed++;
-		// if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
-		// 	return (NULL); //terminate thread
 		if (philo->data->time_to_die < philo->data->time_to_eat)
 			ms_sleep(philo->data->time_to_die);
 		else
-			ms_sleep(philo->data->time_to_eat); //put in a function to modify the state too
+			ms_sleep(philo->data->time_to_eat);
 		pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 		pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
 		pthread_mutex_lock(&philo->data->print_mutex);
@@ -121,14 +134,17 @@ void	init_philo(t_data *data, int i)
 	data->philo_struct[i].id = i + 1;
 	data->philo_struct[i].data = data;
 	data->philo_struct[i].last_meal = 0;
+	data->philo_struct[i].nb_meals_enjoyed = 0;
 	pthread_mutex_init(&data->forks_mutex[i], NULL);
 }
 
 void	execute(t_data *data)
 {
 	int		i;
+	int		check_full;
 
 	i = 0;
+	check_full = 0;
 	data->start_time = time_stamp();//get the start time of the simulation
 	pthread_mutex_init(&(data->print_mutex), NULL); //init my mutex to print_mess
 	//pthread_mutex_init(&(data->death_mutex), NULL); //init my mutex to die
@@ -149,7 +165,18 @@ void	execute(t_data *data)
 		i++;
 	}
 	i = 0;
-	while (i < data->nb_philos)//loop to join(wait) each thread  -- TRYING to figure out the dead mess: data->philo_struct[i].state != DEAD
+	while (1)
+	{
+		if (data->philo_struct[i].state == FULL)
+			check_full += 1;
+		if (check_full == data->nb_philos) //check_if_full un peu comme check if dead: mort ou FULL
+			break ;
+		i++;
+		if (i == data->nb_philos)
+			i = 0;
+	}
+	i = 0;
+	while (i < data->nb_philos)//loop to join(wait) each thread
 	{
 		if (pthread_join(data->philo_struct[i].philo_th, NULL) != 0)
 			return ; //function to return
