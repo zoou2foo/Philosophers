@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
+/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/21 16:24:43 by valeriejean      ###   ########.fr       */
+/*   Updated: 2023/03/22 09:51:06 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,11 @@ typedef enum {
 typedef struct s_philo{ //struct for each philo; need to add id?
 	state_t				state; //to keep track of their state; see above
 	int					id; //philo's id
-	time_t				last_meal;
-	int					nb_meals_enjoyed;
+	time_t				last_meal; //to know the last time they ate
+	int					nb_meals_enjoyed; //to keep track of number of times that they ate
 	struct s_data		*data; //give access to info in data struct
 	pthread_t			philo_th; //comme c'est une struct pour chaque philo; c'est un thread
 }						t_philo;
-//threads philos[200];
 
 typedef struct s_data{ //parameters needed for simulation (rules)
 	int						nb_philos;
@@ -64,13 +63,28 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 /*		PARSING 		*/
 void	parsing(char **str, t_data *data);
 
-/*		UTILS		*/
+/*		UTILS			*/
 int		ft_strlen(char *str);
 int		ft_atoi(char *str);
 time_t	time_stamp(void);
 void	ms_sleep(int ms);
 
-/*		EXECUTE		*/
+/*		EXECUTE			*/
 void	execute(t_data *data);
+
+/*		ACTIONS			*/
+void	eat(t_philo *philo);
+void	go_to_sleep(t_philo *philo);
+void	print_message(t_philo *philo, int flag);
+
+/*		INIT_STUFF		*/
+void	init_philo(t_data *data, int i);
+void	setup_datastruct(t_data *data, char **str);
+void	init_singles_mutex(t_data *data);
+void	init_philo_mutex(t_data *data);
+
+/*		CHECK_UP		*/
+bool	check_if_philo_dead(t_philo *philo);
+bool	check_if_philo_full(t_philo *philo);
 
 #endif

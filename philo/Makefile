@@ -77,6 +77,9 @@ FILES	=	main \
 			parsing \
 			utils \
 			execute \
+			actions \
+			init_stuff \
+			check_up \
 
 
 #LIBFT	=	./libft/libft.a
