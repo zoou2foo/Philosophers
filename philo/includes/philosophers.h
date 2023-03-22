@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/22 09:51:06 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/22 13:43:38 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,14 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	int						nb_full_philos;
 	time_t					start_time;
 	pthread_mutex_t			full_mutex;
+	pthread_mutex_t			dead_body;
 	pthread_mutex_t			print_mutex;
 	pthread_mutex_t			forks_mutex[200]; //each philo will need its own. Le philo a besoin de prendre la fourchette de son voisin. Pas plus de 200 fourchettes, car pas plus que 200 philos. Le philo ne peut pas avoir acces aux 200, donc, ne doit pas etre dans la struc du philo
 	struct s_philo			philo_struct[200]; //chaque philo est une STRUCT pour avoir acces aux info(forks, son id, etc..)
 }							t_data;
 
 /*		PARSING 		*/
-void	parsing(char **str, t_data *data);
+int		parsing(char **str, t_data *data);
 
 /*		UTILS			*/
 int		ft_strlen(char *str);
@@ -75,7 +76,7 @@ void	execute(t_data *data);
 /*		ACTIONS			*/
 void	eat(t_philo *philo);
 void	go_to_sleep(t_philo *philo);
-void	print_message(t_philo *philo, int flag);
+int		print_message(t_philo *philo, int flag);
 
 /*		INIT_STUFF		*/
 void	init_philo(t_data *data, int i);

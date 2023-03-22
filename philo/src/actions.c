@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/22 09:29:36 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/22 13:47:19 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,18 @@ void	print_eating(t_philo *philo)
 	if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
 	{
 		philo->state = FULL;
-		philo->data->nb_full_philos++; // increment the number of full philosophers. Do I need to call mutex lock and unlock??
-		if(philo->data->nb_full_philos == philo->data->nb_philos) // check if all philosophers are full
-		{
-			pthread_mutex_lock(&philo->data->print_mutex);
-			printf("%ld - All philosophers have eaten enough\n", time_stamp() - philo->data->start_time);
-			pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]);
-			pthread_mutex_unlock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
-			pthread_mutex_unlock(&philo->data->print_mutex);
-			return ;
-		}
+		philo->data->nb_full_philos++; // increment the number of full philosophers. DATA RACE
 	}
 }
 
-void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour function qui s'occupe du state, une autre pour print
+int	print_message(t_philo *philo, int flag) //fait trop de choses separes pour function qui s'occupe du state, une autre pour print
 {
-	if (philo->data->someone_is_dead == 1)
-		return ;
+	//pthread_mutex_lock(&philo->data->dead_body);
+	if (philo->data->someone_is_dead == 1) //data race
+	{
+		//pthread_mutex_unlock(&philo->data->dead_body);
+		return (1);
+	}
 	if (flag == 1)
 		printf("%ld - Philo %d has taken a fork\n", time_stamp() - philo->data->start_time, philo->id); //get time(current time - start time) APRES mutex
 	else if (flag == 2)
@@ -57,37 +52,50 @@ void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour 
 	{
 		philo->state = DEAD;
 		printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
+		//pthread_mutex_lock(&philo->data->dead_body);
 		philo->data->someone_is_dead = 1;
+		//pthread_mutex_unlock(&philo->data->dead_body);
 	}
+	return (0);
 }
-//Maybe need a 6th flag...
-// else if (flag == 6)
-// {
-// 	printf("%ld - All philosophers have eaten enough\n", time_stamp() - philo->data->start_time);
-// }
-
 
 void	eat(t_philo *philo)
 {
-		pthread_mutex_lock(&(philo->data->forks_mutex[philo->id - 1]));
-		pthread_mutex_lock(&philo->data->print_mutex);
-		print_message(philo, 1); //printf("- Philo %d has taken a fork\n", philo->id);
+	pthread_mutex_lock(&(philo->data->forks_mutex[philo->id - 1]));
+	pthread_mutex_lock(&philo->data->print_mutex);
+	if (print_message(philo, 1) == 1) //printf("- Philo %d has taken a fork\n", philo->id);
+	{
+		pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]);
 		pthread_mutex_unlock(&philo->data->print_mutex);
-		pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
-		pthread_mutex_lock(&philo->data->print_mutex);
-		print_message(philo, 1);//printf("- Philo %d has taken a fork\n", philo->id celle de son voisin);
+		return ;
+	}
+	pthread_mutex_unlock(&philo->data->print_mutex);
+	pthread_mutex_lock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
+	pthread_mutex_lock(&philo->data->print_mutex);
+	if (print_message(philo, 1) == 1)//printf("- Philo %d has taken a fork\n", philo->id celle de son voisin);
+	{
+		pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]);
+		pthread_mutex_unlock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
 		pthread_mutex_unlock(&philo->data->print_mutex);
-		//check_forks(philo);
-		pthread_mutex_lock(&philo->data->print_mutex);
-		print_message(philo, 2);//printf(" - Philo %d is eating\n", philo->id);
+		return ;
+	}
+	pthread_mutex_unlock(&philo->data->print_mutex);
+	pthread_mutex_lock(&philo->data->print_mutex);
+	if (print_message(philo, 2) == 1)//printf(" - Philo %d is eating\n", philo->id);
+	{
+		pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]);
+		pthread_mutex_unlock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
 		pthread_mutex_unlock(&philo->data->print_mutex);
-		philo->last_meal = time_stamp() - philo->data->start_time;
-		if (philo->data->time_to_die < philo->data->time_to_eat)
-			ms_sleep(philo->data->time_to_die);
-		else
-			ms_sleep(philo->data->time_to_eat);
-		pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
-		pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
+		return ;
+	}
+	pthread_mutex_unlock(&philo->data->print_mutex);
+	philo->last_meal = time_stamp() - philo->data->start_time;
+	if (philo->data->time_to_die < philo->data->time_to_eat)
+		ms_sleep(philo->data->time_to_die);
+	else
+		ms_sleep(philo->data->time_to_eat);
+	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
+	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
 }
 
 void	go_to_sleep(t_philo *philo)

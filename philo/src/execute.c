@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/22 09:49:04 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/22 13:48:07 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ void	*routine(void *arg)
 			pthread_mutex_unlock(&(philo->data->print_mutex)); //NEED IT to avoid data race
 			return (NULL); //to terminate thread
 		}
-		//!!need to add a check si les forks already lock or not.!! <=
 		eat(philo);
 		go_to_sleep(philo);
 	}
@@ -53,12 +52,14 @@ void	wait_for_threads(t_data *data)
 
 void	wait_for_full(t_data *data)
 {
-	while (1)
+	while (data->someone_is_dead != 1)
 	{
-		pthread_mutex_lock(&data->full_mutex); //wait for all philo to be full
-		if (data->nb_full_philos == data->nb_philos) //data race?? because checked in print_message()
+		if (data->nb_full_philos == data->nb_philos)
 		{
-			pthread_mutex_unlock(&data->full_mutex);
+			pthread_mutex_lock(&data->print_mutex);
+			printf("%ld - All philosophers have eaten enough\n", time_stamp() - data->start_time);
+			pthread_mutex_unlock(&data->print_mutex);
+			data->someone_is_dead = 1;
 			break ;
 		}
 	}
@@ -82,53 +83,11 @@ void	execute(t_data *data)
 		usleep(100); //to give time for each philo to take a fork
 		i++;
 	}
-	wait_for_full(data);
-	wait_for_threads(data);
+	if (data->nb_to_eat)
+		wait_for_full(data);
+	wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
 	pthread_mutex_destroy(&data->print_mutex);
 	pthread_mutex_destroy(&data->full_mutex);
 }
 
 //compiler avec fsanitize pour voir data race =thread. ou =address (a verifier)
-
-// int	check_forks(t_philo *philo)
-// {
-// 	int	fork1;
-// 	int	fork2;
-// 	int	first_fork;
-// 	int	second_fork;
-
-// 	fork1 = philo->id % philo->data->nb_philos;
-// 	fork2 = (philo->id + 1) % philo->data->nb_philos;
-// 	first_fork = fork1;
-// 	second_fork = fork2;
-
-// 	if (fork2 < fork1) //assign the lower-numbered fork to the first_fork var
-// 	{
-// 		first_fork = fork2;
-// 		second_fork = fork1;
-// 	}
-// 	if (pthread_mutex_lock(&philo->data->forks_mutex[first_fork]) != 0) //try to pick up the first fork
-// 		return (0);
-// 	pthread_mutex_lock(&philo->data->print_mutex);
-// 	print_message(philo, 1);
-// 	pthread_mutex_unlock(&philo->data->print_mutex);
-// 	if (pthread_mutex_lock(&philo->data->forks_mutex[second_fork]) != 0) //try to pick up the second fork
-// 	{
-// 		pthread_mutex_unlock(&philo->data->forks_mutex[first_fork]);
-// 		return (0);
-// 	}
-// 	pthread_mutex_lock(&philo->data->print_mutex);
-// 	print_message(philo, 1);
-// 	pthread_mutex_unlock(&philo->data->print_mutex);
-// 	pthread_mutex_lock(&philo->data->print_mutex);
-// 	print_message(philo, 2);//printf(" - Philo %d is eating\n", philo->id);
-// 	pthread_mutex_unlock(&philo->data->print_mutex);
-// 	philo->last_meal = time_stamp() - philo->data->start_time;
-// 	if (philo->data->time_to_die < philo->data->time_to_eat)
-// 		ms_sleep(philo->data->time_to_die);
-// 	else
-// 		ms_sleep(philo->data->time_to_eat);
-// 	pthread_mutex_unlock(&(philo->data->forks_mutex[first_fork]));
-// 	pthread_mutex_unlock(&(philo->data->forks_mutex[second_fork]));
-// 	return (1);
-// }

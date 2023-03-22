@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:05:38 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/21 14:53:10 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/22 11:11:14 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ int	main(int ac, char **av)
 	}
 	else
 	{
-		parsing(av, &data); //probably better to send it in a while loop?
+		if (parsing(av, &data) == 1) //1 = error
+			return (1);
 		execute(&data);
 	}
 	return (0);
