@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/22 13:48:07 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/22 14:59:37 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,17 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
 		usleep(100);
-	while (1)
+	while (check_dead(philo->data) == 0)
 	{
-		if (check_if_philo_dead(philo) == false)
+		if ((check_dead(philo->data) == 0) && (check_if_philo_dead(philo) == false))
 		{
-			pthread_mutex_lock(&(philo->data->print_mutex));//NEED IT to avoid data race
-			print_message(philo, 5);
-			pthread_mutex_unlock(&(philo->data->print_mutex)); //NEED IT to avoid data race
+			philo->state = DEAD;
+			pthread_mutex_lock(&philo->data->print_mutex);
+			printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
+			pthread_mutex_unlock(&philo->data->print_mutex);
+			pthread_mutex_lock(&philo->data->dead_body);
+			philo->data->someone_is_dead = 1;
+			pthread_mutex_unlock(&philo->data->dead_body);
 			return (NULL); //to terminate thread
 		}
 		eat(philo);
@@ -50,18 +54,35 @@ void	wait_for_threads(t_data *data)
 	}
 }
 
+int	check_dead(t_data *data)
+{
+	pthread_mutex_lock(&data->dead_body);
+	if (data->someone_is_dead == 1)
+	{
+		pthread_mutex_unlock(&data->dead_body);
+		return (1);
+	}
+	pthread_mutex_unlock(&data->dead_body);
+	return (0);
+}
+
 void	wait_for_full(t_data *data)
 {
-	while (data->someone_is_dead != 1)
+	while (check_dead(data) != 1)
 	{
+		pthread_mutex_lock(&data->full_mutex);
 		if (data->nb_full_philos == data->nb_philos)
 		{
+			pthread_mutex_unlock(&data->full_mutex);
 			pthread_mutex_lock(&data->print_mutex);
 			printf("%ld - All philosophers have eaten enough\n", time_stamp() - data->start_time);
 			pthread_mutex_unlock(&data->print_mutex);
+			pthread_mutex_lock(&data->dead_body);
 			data->someone_is_dead = 1;
+			pthread_mutex_unlock(&data->dead_body);
 			break ;
 		}
+		pthread_mutex_unlock(&data->full_mutex);
 	}
 }
 
@@ -80,7 +101,7 @@ void	execute(t_data *data)
 			printf("%s\n", ERR_THREAD);
 			return ;
 		}
-		usleep(100); //to give time for each philo to take a fork
+		//usleep(100); //to give time for each philo to take a fork
 		i++;
 	}
 	if (data->nb_to_eat)
