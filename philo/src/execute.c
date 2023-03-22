@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
+/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/21 16:55:43 by valeriejean      ###   ########.fr       */
+/*   Updated: 2023/03/22 09:12:13 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour 
 		if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
 		{
 			philo->state = FULL;
-			philo->data->nb_full_philos++; // increment the number of full philosophers
+			philo->data->nb_full_philos++; // increment the number of full philosophers. Do I need to call mutex lock and unlock??
 			if(philo->data->nb_full_philos == philo->data->nb_philos) // check if all philosophers are full
 			{
 				pthread_mutex_lock(&philo->data->print_mutex);
@@ -37,7 +37,6 @@ void	print_message(t_philo *philo, int flag) //fait trop de choses separes pour 
 				pthread_mutex_unlock(&philo->data->print_mutex);
 				return ;
 			}
-			
 		}
 	}
 	else if (flag == 3)
@@ -89,6 +88,49 @@ bool	check_if_philo_full(t_philo *philo)
 	return (false);
 }
 
+// int	check_forks(t_philo *philo)
+// {
+// 	int	fork1;
+// 	int	fork2;
+// 	int	first_fork;
+// 	int	second_fork;
+
+// 	fork1 = philo->id % philo->data->nb_philos;
+// 	fork2 = (philo->id + 1) % philo->data->nb_philos;
+// 	first_fork = fork1;
+// 	second_fork = fork2;
+
+// 	if (fork2 < fork1) //assign the lower-numbered fork to the first_fork var
+// 	{
+// 		first_fork = fork2;
+// 		second_fork = fork1;
+// 	}
+// 	if (pthread_mutex_lock(&philo->data->forks_mutex[first_fork]) != 0) //try to pick up the first fork
+// 		return (0);
+// 	pthread_mutex_lock(&philo->data->print_mutex);
+// 	print_message(philo, 1);
+// 	pthread_mutex_unlock(&philo->data->print_mutex);
+// 	if (pthread_mutex_lock(&philo->data->forks_mutex[second_fork]) != 0) //try to pick up the second fork
+// 	{
+// 		pthread_mutex_unlock(&philo->data->forks_mutex[first_fork]);
+// 		return (0);
+// 	}
+// 	pthread_mutex_lock(&philo->data->print_mutex);
+// 	print_message(philo, 1);
+// 	pthread_mutex_unlock(&philo->data->print_mutex);
+// 	pthread_mutex_lock(&philo->data->print_mutex);
+// 	print_message(philo, 2);//printf(" - Philo %d is eating\n", philo->id);
+// 	pthread_mutex_unlock(&philo->data->print_mutex);
+// 	philo->last_meal = time_stamp() - philo->data->start_time;
+// 	if (philo->data->time_to_die < philo->data->time_to_eat)
+// 		ms_sleep(philo->data->time_to_die);
+// 	else
+// 		ms_sleep(philo->data->time_to_eat);
+// 	pthread_mutex_unlock(&(philo->data->forks_mutex[first_fork]));
+// 	pthread_mutex_unlock(&(philo->data->forks_mutex[second_fork]));
+// 	return (1);
+// }
+
 void	*routine(void *arg)
 {
 	t_philo	*philo;
@@ -115,7 +157,7 @@ void	*routine(void *arg)
 		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 1);//printf("- Philo %d has taken a fork\n", philo->id celle de son voisin);
 		pthread_mutex_unlock(&philo->data->print_mutex);
-		
+		//check_forks(philo);
 		pthread_mutex_lock(&philo->data->print_mutex);
 		print_message(philo, 2);//printf(" - Philo %d is eating\n", philo->id);
 		pthread_mutex_unlock(&philo->data->print_mutex);
@@ -159,14 +201,13 @@ void	execute(t_data *data)
 	data->start_time = time_stamp();//get the start time of the simulation
 	pthread_mutex_init(&(data->print_mutex), NULL); //init my mutex to print_mess
 	pthread_mutex_init(&(data->full_mutex), NULL);
-	//pthread_mutex_init(&(data->death_mutex), NULL); //init my mutex to die
 	while (i < data->nb_philos) //loop to initialize mutex for the forks
 	{
 		init_philo(data, i);  //initialise les mutex AVANT de faire la boucle pour les threads
 		i++;
 	}
 	i = 0; //reset index
-	while (i < data->nb_philos) //loop to create the threads --  TRYING to fix dead mess: && (time_stamp() - data->start_time < data->time_to_death)
+	while (i < data->nb_philos) //loop to create the threads
 	{
 		if (pthread_create(&(data->philo_struct[i].philo_th), NULL, &routine, &(data->philo_struct[i])) != 0) //sending the thread, NULL, thread function and the struct for each philo
 		{
@@ -179,7 +220,7 @@ void	execute(t_data *data)
 	while (1)
 	{
 		pthread_mutex_lock(&data->full_mutex); //wait for all philo to be full
-		if (data->nb_full_philos == data->nb_philos)
+		if (data->nb_full_philos == data->nb_philos) //data race?? because checked in print_message()
 		{
 			pthread_mutex_unlock(&data->full_mutex);
 			break ;
@@ -195,6 +236,7 @@ void	execute(t_data *data)
 		i++;
 	}
 	pthread_mutex_destroy(&data->print_mutex);
+	pthread_mutex_destroy(&data->full_mutex);
 }
 
 //compiler avec fsanitize pour voir data race =thread. ou =address (a verifier)
