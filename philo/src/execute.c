@@ -6,13 +6,11 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/22 14:59:37 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/23 16:53:53 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-/*	FOUR functions... */
 
 void	*routine(void *arg)
 {
@@ -21,69 +19,15 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
 		usleep(100);
-	while (check_dead(philo->data) == 0)
+	while(is_dead(philo) == false) //!dead_or_not
 	{
-		if ((check_dead(philo->data) == 0) && (check_if_philo_dead(philo) == false))
-		{
-			philo->state = DEAD;
-			pthread_mutex_lock(&philo->data->print_mutex);
-			printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
-			pthread_mutex_unlock(&philo->data->print_mutex);
-			pthread_mutex_lock(&philo->data->dead_body);
-			philo->data->someone_is_dead = 1;
-			pthread_mutex_unlock(&philo->data->dead_body);
-			return (NULL); //to terminate thread
-		}
-		eat(philo);
-		go_to_sleep(philo);
+		take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
+		take_second_fork(); //in the function; check again if alive or dead
+		eat(); //in the function; check again if alive or dead ->mutex eat
+		time_to_sleep(); //in the function; check again if alive or dead
+		think(); //in the function; check again if alive or dead ->fin tuer les philos.
 	}
 	return (NULL);
-}
-
-void	wait_for_threads(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->nb_philos)//loop to join(wait) each thread
-	{
-		if (pthread_join(data->philo_struct[i].philo_th, NULL) != 0)
-			return ; //function to return
-		pthread_mutex_destroy(&data->forks_mutex[i]);
-		i++;
-	}
-}
-
-int	check_dead(t_data *data)
-{
-	pthread_mutex_lock(&data->dead_body);
-	if (data->someone_is_dead == 1)
-	{
-		pthread_mutex_unlock(&data->dead_body);
-		return (1);
-	}
-	pthread_mutex_unlock(&data->dead_body);
-	return (0);
-}
-
-void	wait_for_full(t_data *data)
-{
-	while (check_dead(data) != 1)
-	{
-		pthread_mutex_lock(&data->full_mutex);
-		if (data->nb_full_philos == data->nb_philos)
-		{
-			pthread_mutex_unlock(&data->full_mutex);
-			pthread_mutex_lock(&data->print_mutex);
-			printf("%ld - All philosophers have eaten enough\n", time_stamp() - data->start_time);
-			pthread_mutex_unlock(&data->print_mutex);
-			pthread_mutex_lock(&data->dead_body);
-			data->someone_is_dead = 1;
-			pthread_mutex_unlock(&data->dead_body);
-			break ;
-		}
-		pthread_mutex_unlock(&data->full_mutex);
-	}
 }
 
 void	execute(t_data *data)
