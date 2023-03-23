@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/22 14:40:40 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/23 13:09:42 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ void	ms_sleep(int ms);
 
 /*		EXECUTE			*/
 void	execute(t_data *data);
-int		check_dead(t_data *data);
 
 /*		ACTIONS			*/
 void	eat(t_philo *philo);
@@ -89,5 +88,6 @@ void	init_philo_mutex(t_data *data);
 /*		CHECK_UP		*/
 bool	check_if_philo_dead(t_philo *philo);
 bool	check_if_philo_full(t_philo *philo);
+int		check_dead(t_data *data);
 
 #endif

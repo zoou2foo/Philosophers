@@ -6,13 +6,13 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/22 14:59:37 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/23 14:18:18 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-/*	FOUR functions... */
+/*	FIVE functions... */
 
 void	*routine(void *arg)
 {
@@ -52,18 +52,6 @@ void	wait_for_threads(t_data *data)
 		pthread_mutex_destroy(&data->forks_mutex[i]);
 		i++;
 	}
-}
-
-int	check_dead(t_data *data)
-{
-	pthread_mutex_lock(&data->dead_body);
-	if (data->someone_is_dead == 1)
-	{
-		pthread_mutex_unlock(&data->dead_body);
-		return (1);
-	}
-	pthread_mutex_unlock(&data->dead_body);
-	return (0);
 }
 
 void	wait_for_full(t_data *data)
@@ -109,6 +97,7 @@ void	execute(t_data *data)
 	wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
 	pthread_mutex_destroy(&data->print_mutex);
 	pthread_mutex_destroy(&data->full_mutex);
+	pthread_mutex_destroy(&data->dead_body);
 }
 
 //compiler avec fsanitize pour voir data race =thread. ou =address (a verifier)
