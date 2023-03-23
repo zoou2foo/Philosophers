@@ -6,11 +6,22 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/23 16:53:53 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/23 17:57:28 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+//function to print_messages
+void	print_message(t_philo *philo, char *str)
+{
+	if (is_dead(philo) == false) //still needs to check if anybody is dead
+	{
+		pthread_mutex_lock(&philo->data->print_mutex); //lock mutex to print
+		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
+		pthread_mutex_unlock(&philo->data->print_mutex); //unlock mutex to print
+	}
+}
 
 void	*routine(void *arg)
 {
@@ -19,15 +30,30 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
 		usleep(100);
-	while(is_dead(philo) == false) //!dead_or_not
+	while (is_dead(philo) == false) //!dead_or_not
 	{
 		take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
-		take_second_fork(); //in the function; check again if alive or dead
-		eat(); //in the function; check again if alive or dead ->mutex eat
-		time_to_sleep(); //in the function; check again if alive or dead
-		think(); //in the function; check again if alive or dead ->fin tuer les philos.
+		take_second_fork(philo); //in the function; check again if alive or dead
+		eat(philo); //in the function; check again if alive or dead ->mutex eat
+		time_to_sleep(philo); //in the function; check again if alive or dead
+		think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
 	}
 	return (NULL);
+}
+
+//function to join back threads
+void	wait_for_threads(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_philos)//loop to join(wait) each thread
+	{
+		if (pthread_join(data->philo_struct[i].philo_th, NULL) != 0)
+			return ; //function to return
+		pthread_mutex_destroy(&data->forks_mutex[i]);
+		i++;
+	}
 }
 
 void	execute(t_data *data)
@@ -48,8 +74,9 @@ void	execute(t_data *data)
 		//usleep(100); //to give time for each philo to take a fork
 		i++;
 	}
-	if (data->nb_to_eat)
-		wait_for_full(data);
+	//6th arg to check LATER
+	// if (data->nb_to_eat)
+	// 	wait_for_full(data);
 	wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
 	pthread_mutex_destroy(&data->print_mutex);
 	pthread_mutex_destroy(&data->full_mutex);
