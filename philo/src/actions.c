@@ -6,16 +6,18 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/23 18:00:52 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/24 10:06:48 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
+/*		FIVE FUNCTIONS			*/
+
 //take the first fork;
 void	take_first_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) == false && philo->data->flag_dead == 0)
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
 		print_message(philo, "has taken a fork"); //send a str; don't forget mutex_lock print_mutex
@@ -25,20 +27,21 @@ void	take_first_fork(t_philo *philo)
 //take second fork
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) == false && philo->data->flag_dead == 0)
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
-		print_message(philo, "has taken a  2nd fork"); //send a str; don't forget mutex_lock print_mutex
+		print_message(philo, "has taken a 2nd fork"); //send a str; don't forget mutex_lock print_mutex
 	}
 }
 
 //then time to eat
 void	eat(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) == false && philo->data->flag_dead == 0)
 	{
+		philo->state = EATING;
 		print_message(philo, "is eating");
-		philo->nb_meals_enjoyed++;
+		philo->nb_meals_enjoyed++; //to keep count of how many meals they have
 		pthread_mutex_lock(&philo->data->last_meal_mutex);
 		philo->last_meal = time_stamp() - philo->data->start_time;
 		pthread_mutex_unlock(&philo->data->last_meal_mutex);
@@ -54,8 +57,9 @@ void	eat(t_philo *philo)
 //putting the philo to sleep
 void	time_to_sleep(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) == false && philo->data->flag_dead == 0)
 	{
+		philo->state = SLEEPING;
 		print_message(philo, "is sleeping");
 		ms_sleep(philo->data->time_to_sleep);
 	}
@@ -64,6 +68,9 @@ void	time_to_sleep(t_philo *philo)
 //time to think
 void	think(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) == false && philo->data->flag_dead == 0)
+	{
+		philo->state = THINKING;
 		print_message(philo, "is thinking");
+	}
 }

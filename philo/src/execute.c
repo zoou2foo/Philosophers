@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/23 17:57:28 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/24 09:56:10 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,12 @@ void	print_message(t_philo *philo, char *str)
 		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
 		pthread_mutex_unlock(&philo->data->print_mutex); //unlock mutex to print
 	}
+	else if (is_dead(philo) == true) //to print the dead message
+	{
+		pthread_mutex_lock(&philo->data->print_mutex);
+		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
+		pthread_mutex_unlock(&philo->data->print_mutex);
+	}
 }
 
 void	*routine(void *arg)
@@ -30,7 +36,7 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
 		usleep(100);
-	while (is_dead(philo) == false) //!dead_or_not
+	while (is_dead(philo) == false && (philo->data->someone_is_dead == 0) && (philo->data->flag_dead == 0)) //!dead_or_not
 	{
 		take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
 		take_second_fork(philo); //in the function; check again if alive or dead
@@ -38,6 +44,9 @@ void	*routine(void *arg)
 		time_to_sleep(philo); //in the function; check again if alive or dead
 		think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
 	}
+	if (philo->data->flag_dead == 1) //flag to stop them from all printing that they are dead
+		return (NULL);
+	stop_simulation(philo);
 	return (NULL);
 }
 
