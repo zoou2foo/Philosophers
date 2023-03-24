@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/24 10:12:39 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/24 12:16:46 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,34 @@ bool	is_dead(t_philo *philo)
 	return(false);
 }
 
+void	exit_simulation(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		pthread_join(data->philo_struct[i].philo_th, NULL);
+		i++;
+	}
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		pthread_mutex_unlock(&data->forks_mutex[i]);
+		i++;
+	}
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		pthread_mutex_destroy(&data->forks_mutex[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&data->print_mutex);
+	pthread_mutex_destroy(&data->dead_body);
+	pthread_mutex_destroy(&data->last_meal_mutex);
+	pthread_mutex_destroy(&data->full_mutex);
+}
+
 void	stop_simulation(t_philo *philo) //to be called in the routine to stop simulation
 {
 	if (philo->data->flag_dead == 0)
@@ -37,5 +65,6 @@ void	stop_simulation(t_philo *philo) //to be called in the routine to stop simul
 		philo->data->flag_dead = 1; //flag to tell others to not print dead message and just stop simulation
 		philo->data->someone_is_dead = 1; //to say there is a dead body
 		pthread_mutex_unlock(&philo->data->dead_body);
+		exit_simulation(philo->data);
 	}
 }

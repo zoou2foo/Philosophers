@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/24 09:56:10 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/24 12:19:15 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 //function to print_messages
 void	print_message(t_philo *philo, char *str)
 {
-	if (is_dead(philo) == false) //still needs to check if anybody is dead
+	if (is_dead(philo) == false && philo->data->flag_dead == 0) //still needs to check if anybody is dead
 	{
 		pthread_mutex_lock(&philo->data->print_mutex); //lock mutex to print
 		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
 		pthread_mutex_unlock(&philo->data->print_mutex); //unlock mutex to print
 	}
-	else if (is_dead(philo) == true) //to print the dead message
+	else if (is_dead(philo) == true && philo->state == DEAD) //to print the dead message
 	{
 		pthread_mutex_lock(&philo->data->print_mutex);
 		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
@@ -44,8 +44,8 @@ void	*routine(void *arg)
 		time_to_sleep(philo); //in the function; check again if alive or dead
 		think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
 	}
-	if (philo->data->flag_dead == 1) //flag to stop them from all printing that they are dead
-		return (NULL);
+	// if (philo->data->flag_dead == 1) //flag to stop them from all printing that they are dead
+	// 	return (NULL);
 	stop_simulation(philo);
 	return (NULL);
 }
@@ -86,9 +86,9 @@ void	execute(t_data *data)
 	//6th arg to check LATER
 	// if (data->nb_to_eat)
 	// 	wait_for_full(data);
-	wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
-	pthread_mutex_destroy(&data->print_mutex);
-	pthread_mutex_destroy(&data->full_mutex);
+	//wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
+	// pthread_mutex_destroy(&data->print_mutex);
+	// pthread_mutex_destroy(&data->full_mutex);
 }
 
 //compiler avec fsanitize pour voir data race =thread. ou =address (a verifier)
