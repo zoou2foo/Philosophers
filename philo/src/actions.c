@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/24 14:13:49 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/24 16:09:06 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	take_second_fork(t_philo *philo)
 //then time to eat
 void	eat(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->data->dead_body);
 	philo->state = EATING; //superflu, parce qu'on ne sait pas lequel; il faudrait un tableau meme chose pour tous les state
 	print_message(philo, "is eating");
 	pthread_mutex_lock(&philo->data->full_mutex);
@@ -51,7 +52,7 @@ void	eat(t_philo *philo)
 		ms_sleep(philo->data->time_to_eat); //else eat for the time_to_eat determined
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
-
+	pthread_mutex_unlock(&philo->data->dead_body);
 }
 
 //putting the philo to sleep
