@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/25 12:01:19 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/25 14:36:26 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,16 @@
 bool	is_dead(t_philo *philo)
 {
 	//pthread_mutex_lock(&philo->data->dead_body); //not sure if the right place to do
+	//pthread_mutex_lock(&philo->data->dead_body);
 	if (((time_stamp() - philo->data->start_time) - philo->last_meal) > philo->data->time_to_die)
 	{
-		//philo->data->someone_is_dead = 1; // not sure if the right place to do
-		//pthread_mutex_unlock(&philo->data->dead_body);
-		//should I stop everything here and print dead??
-		//pthread_mutex_lock(&philo->data->dead_body);
+		pthread_mutex_lock(&philo->data->dead_body);
 		philo->state = DEAD;
 		philo->data->someone_is_dead = 1;
-		//pthread_mutex_unlock(&philo->data->dead_body);
+		pthread_mutex_unlock(&philo->data->dead_body);
 		return (true);
 	}
-	//might need to add pthread_mutex_unlock(&philo->data->dead_body)
+	//pthread_mutex_unlock(&philo->data->dead_body);
 	return(false);
 }
 
@@ -57,29 +55,8 @@ void	exit_simulation(t_data *data)
 //watcher_th lock tout les mutex pour empecher les autres; BLOQUER celui de MESSAGE en priorite (Steven helps)
 void	stop_simulation(t_philo *philo) //to be called in the routine to stop simulation
 {
-	// pthread_mutex_lock(&philo->data->dead_body);
-	// philo->data->someone_is_dead = 1; //to say there is a dead body
-	// pthread_mutex_unlock(&philo->data->dead_body);
-	//philo->state = DEAD; //change state; superflu
 	pthread_mutex_lock(&philo->data->print_mutex);
 	printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
 	pthread_mutex_unlock(&philo->data->print_mutex);
-	//exit_simulation(philo->data);
-}
-
-int	check_alive_or_not(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->nb_philos)
-	{
-		if (data->philo_struct[i].state == DEAD)
-		{
-			stop_simulation(data->philo_struct);
-			return (1);
-		}
-		i++;
-	}
-	return (0);
+	exit_simulation(philo->data);
 }
