@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/24 17:01:50 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/25 10:05:23 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,25 +38,30 @@ void	*routine(void *arg)
 		usleep(100);
 	while (1) //possible data_race; boucle infini, if cette condition la; mutex avant if et unlock après
 	{
-		//pthread_mutex_lock(&philo->data->dead_body);
-		printf("is_dead = %d\n", is_dead(philo));
-		if (is_dead(philo) == true)
+		//printf("is_dead = %d\n", is_dead(philo)); //to help debug
+		pthread_mutex_lock(&philo->data->dead_body);
+		pthread_mutex_lock(&philo->data->print_mutex);
+		if (is_dead(philo) == true) //we need to add if they are all full
 		{
+			pthread_mutex_unlock(&philo->data->dead_body);
+			pthread_mutex_unlock(&philo->data->print_mutex);
 			break ;
 		}
-		else
-		{
-			take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
-			take_second_fork(philo); //in the function; check again if alive or dead
-			eat(philo); //in the function; check again if alive or dead ->mutex eat
-			time_to_sleep(philo); //in the function; check again if alive or dead
-			think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
-		}
+		pthread_mutex_unlock(&philo->data->dead_body);
+		pthread_mutex_unlock(&philo->data->print_mutex);
+		take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
+		take_second_fork(philo); //in the function; check again if alive or dead
+		eat(philo); //in the function; check again if alive or dead ->mutex eat
+		time_to_sleep(philo); //in the function; check again if alive or dead
+		think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
+
 		//pthread_mutex_lock(&philo->data->dead_body);
 	}
+	if (check_alive_or_not(philo->data) == 1)
+		return (NULL);
 	// if (philo->data->flag_dead == 1) //flag to stop them from all printing that they are dead
 	// 	return (NULL);
-	stop_simulation(philo); //en faisant thread_watch, pas besoin
+	//stop_simulation(philo); //en faisant thread_watch, pas besoin
 	return (NULL);
 }
 
@@ -91,16 +96,18 @@ void	execute(t_data *data)
 			return ;
 		}
 		//mais juste d'en avoir un peu creer des probs avec 100 philos (ou avec beacuoup de philo)
-		pthread_create(&data->watcher_th, NULL, &routine_watch, &data->philo_struct[i] != 0) //routine de watch de checker si someone_is_dead est a un.
+		//pthread_create(&data->watcher_th, NULL, &routine_watch, &data->philo_struct[i] != 0) //routine de watch de checker si someone_is_dead est a un. (Steven helps)
 		//usleep(100); //to give time for each philo to take a fork
 		i++;
 	}
-	if (data->someone_is_dead == 1) //mutex avant et apres pour eviter data race; possible
-		exit_simulation(data);
+	// check_alive_or_not(data);
+	exit_simulation(data);
+	// if (data->someone_is_dead == 1) //mutex avant et apres pour eviter data race; possible
+	// 	exit_simulation(data);
 	//6th arg to check LATER
 	// if (data->nb_to_eat)
 	// 	wait_for_full(data);
-	wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
+	//wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
 	// pthread_mutex_destroy(&data->print_mutex);
 	// pthread_mutex_destroy(&data->full_mutex);
 }

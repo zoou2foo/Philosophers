@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/24 14:28:29 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/25 10:00:33 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,5 +92,6 @@ void	init_philo_mutex(t_data *data);
 bool	is_dead(t_philo *philo);
 void	stop_simulation(t_philo *philo);
 void	exit_simulation(t_data *data);
+int		check_alive_or_not(t_data *data);
 
 #endif
