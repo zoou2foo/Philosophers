@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/25 14:38:00 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/26 12:31:02 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,16 @@ void	*routine(void *arg)
 		usleep(100);
 	while (1) //to avoid data_race: infinite loop and an if condition is_dead. Lock mutex before if and unlock after
 	{
-		//pthread_mutex_lock(&philo->data->dead_body);
-		//pthread_mutex_lock(&philo->data->print_mutex);
+		pthread_mutex_lock(&philo->data->dead_body);
+		pthread_mutex_lock(&philo->data->print_mutex);
 		if (is_dead(philo) == true) //we need to add if they are all full
 		{
-			//pthread_mutex_unlock(&philo->data->dead_body);
-			//pthread_mutex_unlock(&philo->data->print_mutex);
+			pthread_mutex_unlock(&philo->data->dead_body);
+			pthread_mutex_unlock(&philo->data->print_mutex);
 			break ;
 		}
-		//pthread_mutex_unlock(&philo->data->dead_body);
-		//pthread_mutex_unlock(&philo->data->print_mutex);
+		pthread_mutex_unlock(&philo->data->dead_body);
+		pthread_mutex_unlock(&philo->data->print_mutex);
 		take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
 		take_second_fork(philo); //in the function; check again if alive or dead
 		eat(philo); //in the function; check again if alive or dead ->mutex eat
@@ -82,6 +82,7 @@ void	execute(t_data *data)
 		}
 		i++;
 	}
+	wait_for_threads(data);
 	//stop_simulation(data); maybe not there to call //FUNCTION to STOP simulation
 	//exit_simulation(data); //FUNCTION to destroy all threads: unlock all forks, destroy all forks_mutex and destroy all the remaining mutex
 }
