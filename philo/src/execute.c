@@ -6,12 +6,13 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/24 14:44:21 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/27 09:19:59 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
+/*		FOUR FUNCTIONS			*/
 //function to print_messages
 void	print_message(t_philo *philo, char *str)
 {
