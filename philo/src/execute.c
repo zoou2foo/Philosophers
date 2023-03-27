@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/27 09:19:59 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/27 14:00:00 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@ void	print_message(t_philo *philo, char *str)
 		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
 		pthread_mutex_unlock(&philo->data->print_mutex); //unlock mutex to print
 	}
-	else if (is_dead(philo) == true && philo->data->someone_is_dead == 1) //to print the dead message
-	{
-		pthread_mutex_lock(&philo->data->print_mutex);
-		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
-		pthread_mutex_unlock(&philo->data->print_mutex);
-	}
+	// else if (is_dead(philo) == true && philo->data->someone_is_dead == 1) //to print the dead message
+	// {
+	// 	pthread_mutex_lock(&philo->data->print_mutex);
+	// 	printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
+	// 	pthread_mutex_unlock(&philo->data->print_mutex);
+	// }
 }
 
 void	*routine(void *arg)
@@ -36,10 +36,11 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
-		usleep(100);
-	while (1) //possible data_race; boucle infini, if cette condition la; mutex avant if et unlock après
+		think(philo);
+		// usleep(100);
+	while (1) //possible data_race -> Solution: boucle infini, if (is_dead == false), dead_body mutex before if and unlock after
 	{
-		pthread_mutex_lock(&philo->data->dead_body);
+		//pthread_mutex_lock(&philo->data->dead_body); //if I have the mutex here; only one thread can do the routine
 		if (is_dead(philo) == false)
 		{
 			take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
@@ -48,11 +49,14 @@ void	*routine(void *arg)
 			time_to_sleep(philo); //in the function; check again if alive or dead
 			think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
 		}
-		pthread_mutex_lock(&philo->data->dead_body);
+		else
+		{
+			//pthread_mutex_lock(&philo->data->print_mutex);
+			break ;
+		}
+		//pthread_mutex_unlock(&philo->data->dead_body);
 	}
-	// if (philo->data->flag_dead == 1) //flag to stop them from all printing that they are dead
-	// 	return (NULL);
-	stop_simulation(philo);
+	//stop_simulation(philo);
 	return (NULL);
 }
 
@@ -75,10 +79,10 @@ void	execute(t_data *data)
 {
 	int		i;
 
-	data->start_time = time_stamp();//get the start time of the simulation
 	init_singles_mutex(data);
 	init_philo_mutex(data);
 	i = 0;
+	data->start_time = time_stamp();//get the start time of the simulation
 	while (i < data->nb_philos) //loop to create the threads
 	{
 		if (pthread_create(&(data->philo_struct[i].philo_th), NULL, &routine, &(data->philo_struct[i])) != 0) //sending the thread, NULL, thread function and the struct for each philo
@@ -89,12 +93,12 @@ void	execute(t_data *data)
 		//usleep(100); //to give time for each philo to take a fork
 		i++;
 	}
-	if (data->someone_is_dead == 1) //mutex avant et apres pour eviter data race; possible
-		exit_simulation(data);
+	wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
+	// if (data->someone_is_dead == 1) //mutex avant et apres pour eviter data race; possible
+	// 	exit_simulation(data);
 	//6th arg to check LATER
 	// if (data->nb_to_eat)
 	// 	wait_for_full(data);
-	//wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
 	// pthread_mutex_destroy(&data->print_mutex);
 	// pthread_mutex_destroy(&data->full_mutex);
 }
