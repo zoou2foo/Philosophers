@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/27 13:59:09 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/27 16:03:09 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ void	take_first_fork(t_philo *philo)
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]); //philo 1 takes fork_mutex 0 and so on...
 		print_message(philo, "has taken a fork"); //send a str; don't forget mutex_lock print_mutex
 	}
+	else
+		pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]);
 }
 
 //take second fork
@@ -39,6 +41,11 @@ void	take_second_fork(t_philo *philo)
 		}
 		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
 		print_message(philo, "has taken a 2nd fork"); //send a str; don't forget mutex_lock print_mutex
+	}
+	else
+	{
+		pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]);
+		pthread_mutex_unlock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
 	}
 }
 

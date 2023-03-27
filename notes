@@ -1,3 +1,13 @@
+/*		PROBLEMS TO SOLVE		*/
+- drifting
+	-> reduce the critical section. Reduce the amount of code running between mutex lock and pthread_mutex_unlock
+	-> finer-grained locking: use separate mutexes to protect individual fields or elements. **Already done**
+	-> Read/write locks: need to look at this...
+	-> lock-free data structure???
+
+
+
+
 /*		OLD PHILO		*/
 
 void	*routine(void *arg)
