@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:31:45 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/21 10:35:10 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/28 12:03:44 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ void	ms_sleep(int ms)
 	while (1)
 	{
 		if (time_stamp() >= goal)
-			break ;
+			return ;
+			//break ;
+		usleep(50);
 	}
 }

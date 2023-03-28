@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/27 14:00:00 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/28 11:30:36 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
-		think(philo);
-		// usleep(100);
+		//think(philo); // peut-etre problematique a cause de ce que je peux recevoir en parametres
+		usleep(15000);
 	while (1) //possible data_race -> Solution: boucle infini, if (is_dead == false), dead_body mutex before if and unlock after
 	{
 		//pthread_mutex_lock(&philo->data->dead_body); //if I have the mutex here; only one thread can do the routine
@@ -47,7 +47,8 @@ void	*routine(void *arg)
 			take_second_fork(philo); //in the function; check again if alive or dead
 			eat(philo); //in the function; check again if alive or dead ->mutex eat
 			time_to_sleep(philo); //in the function; check again if alive or dead
-			think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
+			print_message(philo, "is thinking");
+			//think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
 		}
 		else
 		{
