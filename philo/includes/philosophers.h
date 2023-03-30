@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/23 13:09:42 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/30 08:45:00 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ typedef enum {
 	EATING,
 	SLEEPING,
 	FULL,
+	ALIVE,
 	DEAD
 }	state_t;
 typedef struct s_philo{ //struct for each philo; need to add id?
@@ -55,6 +56,7 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	int						nb_full_philos;
 	time_t					start_time;
 	pthread_mutex_t			full_mutex;
+	pthread_mutex_t			last_meal_mutex;
 	pthread_mutex_t			dead_body;
 	pthread_mutex_t			print_mutex;
 	pthread_mutex_t			forks_mutex[200]; //each philo will need its own. Le philo a besoin de prendre la fourchette de son voisin. Pas plus de 200 fourchettes, car pas plus que 200 philos. Le philo ne peut pas avoir acces aux 200, donc, ne doit pas etre dans la struc du philo
@@ -72,12 +74,14 @@ void	ms_sleep(int ms);
 
 /*		EXECUTE			*/
 void	execute(t_data *data);
+void	print_message(t_philo *philo, char *str);
 
 /*		ACTIONS			*/
+void	take_first_fork(t_philo *philo);
+void	take_second_fork(t_philo *philo);
 void	eat(t_philo *philo);
-void	go_to_sleep(t_philo *philo);
-int		print_message(t_philo *philo, int flag);
-void	lock_n_print(t_philo *philo, char *str);
+void	time_to_sleep(t_philo *philo);
+void	think(t_philo *philo);
 
 /*		INIT_STUFF		*/
 void	init_philo(t_data *data, int i);
@@ -86,8 +90,8 @@ void	init_singles_mutex(t_data *data);
 void	init_philo_mutex(t_data *data);
 
 /*		CHECK_UP		*/
-bool	check_if_philo_dead(t_philo *philo);
-bool	check_if_philo_full(t_philo *philo);
-int		check_dead(t_data *data);
+bool	is_dead(t_philo *philo);
+void	stop_simulation(t_philo *philo);
+void	exit_simulation(t_data *data);
 
 #endif
