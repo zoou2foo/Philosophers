@@ -6,19 +6,12 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/03/23 14:18:18 by vjean            ###   ########.fr       */
-=======
-/*   Updated: 2023/03/28 11:30:36 by vjean            ###   ########.fr       */
->>>>>>> retrieving_branch
+/*   Updated: 2023/03/30 10:13:22 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-<<<<<<< HEAD
-/*	FIVE functions... */
-=======
 /*		FOUR FUNCTIONS			*/
 //function to print_messages
 void	print_message(t_philo *philo, char *str)
@@ -28,15 +21,9 @@ void	print_message(t_philo *philo, char *str)
 		pthread_mutex_lock(&philo->data->print_mutex); //lock mutex to print
 		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
 		pthread_mutex_unlock(&philo->data->print_mutex); //unlock mutex to print
+		//pthread_mutex_unlock(&philo->data->dead_body);
 	}
-	// else if (is_dead(philo) == true && philo->data->someone_is_dead == 1) //to print the dead message
-	// {
-	// 	pthread_mutex_lock(&philo->data->print_mutex);
-	// 	printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
-	// 	pthread_mutex_unlock(&philo->data->print_mutex);
-	// }
 }
->>>>>>> retrieving_branch
 
 void	*routine(void *arg)
 {
@@ -53,6 +40,7 @@ void	*routine(void *arg)
 		{
 			take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
 			take_second_fork(philo); //in the function; check again if alive or dead
+			//pthread_mutex_unlock(&philo->data->dead_body);
 			eat(philo); //in the function; check again if alive or dead ->mutex eat
 			time_to_sleep(philo); //in the function; check again if alive or dead
 			print_message(philo, "is thinking");
@@ -60,7 +48,7 @@ void	*routine(void *arg)
 		}
 		else
 		{
-			//pthread_mutex_lock(&philo->data->print_mutex);
+			//pthread_mutex_unlock(&philo->data->dead_body);
 			break ;
 		}
 		//pthread_mutex_unlock(&philo->data->dead_body);
@@ -84,29 +72,6 @@ void	wait_for_threads(t_data *data)
 	}
 }
 
-<<<<<<< HEAD
-void	wait_for_full(t_data *data)
-{
-	while (check_dead(data) != 1)
-	{
-		pthread_mutex_lock(&data->full_mutex);
-		if (data->nb_full_philos == data->nb_philos)
-		{
-			pthread_mutex_unlock(&data->full_mutex);
-			pthread_mutex_lock(&data->print_mutex);
-			printf("%ld - All philosophers have eaten enough\n", time_stamp() - data->start_time);
-			pthread_mutex_unlock(&data->print_mutex);
-			pthread_mutex_lock(&data->dead_body);
-			data->someone_is_dead = 1;
-			pthread_mutex_unlock(&data->dead_body);
-			break ;
-		}
-		pthread_mutex_unlock(&data->full_mutex);
-	}
-}
-
-=======
->>>>>>> retrieving_branch
 void	execute(t_data *data)
 {
 	int		i;
@@ -126,11 +91,6 @@ void	execute(t_data *data)
 		i++;
 	}
 	wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
-<<<<<<< HEAD
-	pthread_mutex_destroy(&data->print_mutex);
-	pthread_mutex_destroy(&data->full_mutex);
-	pthread_mutex_destroy(&data->dead_body);
-=======
 	// if (data->someone_is_dead == 1) //mutex avant et apres pour eviter data race; possible
 	// 	exit_simulation(data);
 	//6th arg to check LATER
@@ -138,7 +98,6 @@ void	execute(t_data *data)
 	// 	wait_for_full(data);
 	// pthread_mutex_destroy(&data->print_mutex);
 	// pthread_mutex_destroy(&data->full_mutex);
->>>>>>> retrieving_branch
 }
 
 //compiler avec fsanitize pour voir data race =thread. ou =address (a verifier)

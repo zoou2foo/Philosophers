@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/30 08:44:37 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/30 10:12:28 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,12 @@ void	take_second_fork(t_philo *philo)
 {
 	if (is_dead(philo) == false)
 	{
-		if (philo->id - 1 == (philo->id) % philo->data->nb_philos) {
+		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
+		{
 			ms_sleep(philo->data->time_to_die);
+			pthread_mutex_lock(&philo->data->really_dead);
 			philo->data->someone_is_dead = 1;
+			pthread_mutex_unlock(&philo->data->really_dead);
 			stop_simulation(philo);
 			return;
 		}
@@ -81,7 +84,9 @@ void	time_to_sleep(t_philo *philo)
 		if ((philo->data->time_to_eat + philo->data->time_to_sleep) > philo->data->time_to_die)
 		{
 			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
+			pthread_mutex_lock(&philo->data->really_dead);
 			philo->state = DEAD;
+			pthread_mutex_unlock(&philo->data->really_dead);
 		}
 		else
 			ms_sleep(philo->data->time_to_sleep);

@@ -2,6 +2,60 @@
 datarace now...
 push more tests
 
+WARNING: ThreadSanitizer: data race (pid=10087)
+  Write of size 4 at 0x7ffee409c484 by thread T1:
+    #0 is_dead check_up.c:25 (philo:x86_64+0x10000394d)
+    #1 print_message execute.c:19 (philo:x86_64+0x100002417)
+    #2 routine execute.c:46 (philo:x86_64+0x10000267d)
+
+  Previous read of size 4 at 0x7ffee409c484 by thread T10 (mutexes: write M28, write M19):
+    #0 is_dead check_up.c:34 (philo:x86_64+0x1000039a2)
+    #1 print_message execute.c:19 (philo:x86_64+0x100002417)
+    #2 take_second_fork actions.c:44 (philo:x86_64+0x100002c14)
+    #3 routine execute.c:43 (philo:x86_64+0x10000265b)
+
+  As if synchronized via sleep:
+    #0 usleep <null>:3 (libclang_rt.tsan_osx_dynamic.dylib:x86_64h+0x2c5ae)
+    #1 ms_sleep utils.c:70 (philo:x86_64+0x1000023c0)
+    #2 time_to_sleep actions.c:83 (philo:x86_64+0x100003257)
+    #3 routine execute.c:45 (philo:x86_64+0x10000266d)
+
+  Location is stack of main thread.
+
+  Mutex M28 (0x7ffee409c7d8) created at:
+    #0 pthread_mutex_init <null>:3 (libclang_rt.tsan_osx_dynamic.dylib:x86_64h+0x2e913)
+    #1 init_philo init_stuff.c:35 (philo:x86_64+0x100003763)
+    #2 init_philo_mutex init_stuff.c:53 (philo:x86_64+0x10000385a)
+    #3 execute execute.c:80 (philo:x86_64+0x100002811)
+    #4 main main.c:29 (philo:x86_64+0x100001b60)
+
+  Mutex M19 (0x7ffee409c598) created at:
+    #0 pthread_mutex_init <null>:3 (libclang_rt.tsan_osx_dynamic.dylib:x86_64h+0x2e913)
+    #1 init_philo init_stuff.c:35 (philo:x86_64+0x100003763)
+    #2 init_philo_mutex init_stuff.c:53 (philo:x86_64+0x10000385a)
+    #3 execute execute.c:80 (philo:x86_64+0x100002811)
+    #4 main main.c:29 (philo:x86_64+0x100001b60)
+
+  Thread T1 (tid=1321543, running) created by main thread at:
+    #0 pthread_create <null>:3 (libclang_rt.tsan_osx_dynamic.dylib:x86_64h+0x2d8fd)
+    #1 execute execute.c:85 (philo:x86_64+0x1000028c6)
+    #2 main main.c:29 (philo:x86_64+0x100001b60)
+
+  Thread T10 (tid=1321574, running) created by main thread at:
+    #0 pthread_create <null>:3 (libclang_rt.tsan_osx_dynamic.dylib:x86_64h+0x2d8fd)
+    #1 execute execute.c:85 (philo:x86_64+0x1000028c6)
+    #2 main main.c:29 (philo:x86_64+0x100001b60)
+
+SUMMARY: ThreadSanitizer: data race check_up.c:25 in is_dead
+
+
+
+
+
+
+
+
+
 
 
 
