@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/27 12:45:12 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/30 10:04:27 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	pthread_mutex_t			full_mutex;
 	pthread_mutex_t			last_meal_mutex;
 	pthread_mutex_t			dead_body;
+	pthread_mutex_t			really_dead;
 	pthread_mutex_t			print_mutex;
 	pthread_mutex_t			forks_mutex[200]; //each philo will need its own. Le philo a besoin de prendre la fourchette de son voisin. Pas plus de 200 fourchettes, car pas plus que 200 philos. Le philo ne peut pas avoir acces aux 200, donc, ne doit pas etre dans la struc du philo
 	struct s_philo			philo_struct[200]; //chaque philo est une STRUCT pour avoir acces aux info(forks, son id, etc..)

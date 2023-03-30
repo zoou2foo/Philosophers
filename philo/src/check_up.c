@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/27 13:28:09 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/30 10:09:59 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,15 @@
 bool	is_dead(t_philo *philo)
 {
 	//mutex_lock before and after if; doesn't help
-	pthread_mutex_lock(&philo->data->dead_body);
 	//if ((philo->data->someone_is_dead == 0 && ((time_stamp() - philo->data->start_time) - philo->last_meal) > philo->data->time_to_die) || philo->state == DEAD) //formula to check if philo is dead
+	pthread_mutex_lock(&philo->data->dead_body);
 	if (philo->state == DEAD && philo->data->someone_is_dead == 0)//pour s'assure que juste ONE philo rentre là et s'affiche.
 	{
-		// pthread_mutex_lock(&philo->data->dead_body); //lock to change someone_is_dead (in data)
 		//philo->state = DEAD; //change state; superfluous maybe
+		//pthread_mutex_lock(&philo->data->dead_body); //lock to change someone_is_dead (in data)
+		pthread_mutex_lock(&philo->data->really_dead);
 		philo->data->someone_is_dead = 1;
+		pthread_mutex_unlock(&philo->data->really_dead);
 		pthread_mutex_unlock(&philo->data->dead_body);
 		stop_simulation(philo);
 		return (true);
@@ -31,13 +33,17 @@ bool	is_dead(t_philo *philo)
 	{
 		//pthread_mutex_lock(&philo->data->dead_body); //lock to change someone_is_dead (in data)
 		//philo->state = DEAD; //change state; superfluous maybe
+		pthread_mutex_lock(&philo->data->really_dead);
 		if (philo->data->someone_is_dead == 1) //check si un autre philo est mort
 		{
+			pthread_mutex_unlock(&philo->data->really_dead);
 			pthread_mutex_unlock(&philo->data->dead_body);
 			return (true);
 		}
+		pthread_mutex_unlock(&philo->data->really_dead);
 		pthread_mutex_unlock(&philo->data->dead_body);
 	}
+	pthread_mutex_unlock(&philo->data->dead_body);
 	return(false);
 }
 
