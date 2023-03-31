@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 11:48:52 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 11:56:43 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ bool	is_dead(t_philo *philo)
 	return(false);
 }
 
+//time to unlock any forks_mutex and destroy any mutex
 void	exit_simulation(t_data *data)
 {
 	int	i;
@@ -53,32 +54,26 @@ void	exit_simulation(t_data *data)
 	pthread_mutex_unlock(&data->full_mutex);
 	while (i < data->nb_philos)
 	{
-		pthread_mutex_unlock(&data->forks_mutex[i]); //to unlock all forks so nobody is holding on a fork
+		pthread_mutex_unlock(&data->forks_mutex[i]);
 		i++;
 	}
 	i = 0;
 	while (i < data->nb_philos)
 	{
-		pthread_mutex_destroy(&data->forks_mutex[i]); //destroy all the mutex created for the forks
-		//pthread_join(data->philo_struct[i].philo_th, NULL); //threads join when they are done their thread function (their job); needs to be after destroy forks mutex otherwise; you lost the threads
+		pthread_mutex_destroy(&data->forks_mutex[i]);
 		i++;
 	}
-	// i = 0;
-	// while (i < data->nb_philos)
-	// {
-	// 	i++;
-	// }
-	pthread_mutex_destroy(&data->print_mutex); //destroy each single mutex
+	pthread_mutex_destroy(&data->print_mutex);
 	pthread_mutex_destroy(&data->dead_body);
 	pthread_mutex_destroy(&data->last_meal_mutex);
 	pthread_mutex_destroy(&data->full_mutex);
 }
 
-void	stop_simulation(t_philo *philo) //to be called in the routine to stop simulation
+//start the process to stop simulation when someone is dead
+void	stop_simulation(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->print_mutex);
 	printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
 	pthread_mutex_unlock(&philo->data->print_mutex);
-	//print_message(philo, "is dead");
 	exit_simulation(philo->data);
 }
