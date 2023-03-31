@@ -6,11 +6,14 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/30 10:12:20 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 10:10:22 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+/*			FOUR FUNCTIONS			*/
+
 
 //to check if philo dies OR is there a dead body
 bool	is_dead(t_philo *philo)

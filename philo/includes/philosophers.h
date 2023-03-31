@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/30 10:12:12 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 10:10:44 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	int						nb_full_philos;
 	time_t					start_time;
 	pthread_mutex_t			full_mutex;
+	pthread_mutex_t			count_full;
 	pthread_mutex_t			last_meal_mutex;
 	pthread_mutex_t			dead_body;
 	pthread_mutex_t			really_dead;
