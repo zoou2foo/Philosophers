@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 11:46:09 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 11:48:52 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,13 @@
 /*			THREE FUNCTIONS			*/
 
 //to check if philo dies OR there is a dead body
-//if condition: to make sure that only ONE philo gets in and p
+//if condition: to make sure that only ONE philo gets in and change the var
+//else ->if condition to check if another philo died
 bool	is_dead(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->dead_body);
-	if (philo->state == DEAD && philo->data->someone_is_dead == 0)//pour s'assure que juste ONE philo rentre là et s'affiche.
+	if (philo->state == DEAD && philo->data->someone_is_dead == 0)
 	{
-		//philo->state = DEAD; //change state; superfluous maybe
-		//pthread_mutex_lock(&philo->data->dead_body); //lock to change someone_is_dead (in data)
 		pthread_mutex_lock(&philo->data->really_dead);
 		philo->data->someone_is_dead = 1;
 		pthread_mutex_unlock(&philo->data->really_dead);
@@ -32,10 +31,8 @@ bool	is_dead(t_philo *philo)
 	}
 	else
 	{
-		//pthread_mutex_lock(&philo->data->dead_body); //lock to change someone_is_dead (in data)
-		//philo->state = DEAD; //change state; superfluous maybe
 		pthread_mutex_lock(&philo->data->really_dead);
-		if (philo->data->someone_is_dead == 1) //check si un autre philo est mort
+		if (philo->data->someone_is_dead == 1)
 		{
 			pthread_mutex_unlock(&philo->data->really_dead);
 			pthread_mutex_unlock(&philo->data->dead_body);
@@ -53,7 +50,6 @@ void	exit_simulation(t_data *data)
 	int	i;
 
 	i = 0;
-	//pthread_mutex_unlock(&data->last_meal_mutex);
 	pthread_mutex_unlock(&data->full_mutex);
 	while (i < data->nb_philos)
 	{
