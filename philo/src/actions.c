@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/30 10:08:06 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 09:17:17 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ void	eat(t_philo *philo)
 	pthread_mutex_lock(&philo->data->last_meal_mutex); //seulement un philo a la fois va lire la variable; juste lui qui va lire sa propre variable
 	philo->last_meal = time_stamp() - philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->last_meal_mutex);
-	
 	if (philo->data->time_to_die < philo->data->time_to_eat) // to calculate the time to eat: here it will die before ending his meal
 		ms_sleep(philo->data->time_to_die); //then eat until dies
 	else //may not need this shit (if... else)
@@ -72,6 +71,14 @@ void	eat(t_philo *philo)
 	pthread_mutex_lock(&philo->data->full_mutex);
 	philo->nb_meals_enjoyed++;
 	pthread_mutex_unlock(&philo->data->full_mutex);
+	if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
+	{
+		pthread_mutex_lock(&philo->data->count_full);
+		philo->data->nb_full_philos += 1;
+		pthread_mutex_unlock(&philo->data->count_full);
+		// pthread_mutex_unlock(&philo->data->full_mutex);
+		//pthread_mutex_unlock(&philo->data->full_mutex);
+	}
 }
 
 //putting the philo to sleep

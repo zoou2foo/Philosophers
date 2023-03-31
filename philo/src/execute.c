@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/30 09:26:15 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 09:18:25 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,10 @@ void	*routine(void *arg)
 	while (1) //possible data_race -> Solution: boucle infini, if (is_dead == false), dead_body mutex before if and unlock after
 	{
 		//pthread_mutex_lock(&philo->data->dead_body); //if I have the mutex here; only one thread can do the routine
-		if (is_dead(philo) == false)
+		pthread_mutex_lock(&philo->data->full_mutex);
+		if (is_dead(philo) == false && (philo->data->nb_full_philos != philo->data->nb_philos))
 		{
+			pthread_mutex_unlock(&philo->data->full_mutex);
 			take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
 			take_second_fork(philo); //in the function; check again if alive or dead
 			//pthread_mutex_unlock(&philo->data->dead_body);
@@ -48,6 +50,7 @@ void	*routine(void *arg)
 		}
 		else
 		{
+			pthread_mutex_unlock(&philo->data->full_mutex);
 			//pthread_mutex_unlock(&philo->data->dead_body);
 			break ;
 		}
