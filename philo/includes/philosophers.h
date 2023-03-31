@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 10:10:44 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 11:42:50 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,8 @@
 
 typedef enum {
 	THINKING,
-	EATING,
 	SLEEPING,
 	FULL,
-	ALIVE,
 	DEAD
 }	state_t;
 typedef struct s_philo{ //struct for each philo; need to add id?

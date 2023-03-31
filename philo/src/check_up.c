@@ -6,20 +6,18 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 10:10:22 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 11:46:09 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-/*			FOUR FUNCTIONS			*/
+/*			THREE FUNCTIONS			*/
 
-
-//to check if philo dies OR is there a dead body
+//to check if philo dies OR there is a dead body
+//if condition: to make sure that only ONE philo gets in and p
 bool	is_dead(t_philo *philo)
 {
-	//mutex_lock before and after if; doesn't help
-	//if ((philo->data->someone_is_dead == 0 && ((time_stamp() - philo->data->start_time) - philo->last_meal) > philo->data->time_to_die) || philo->state == DEAD) //formula to check if philo is dead
 	pthread_mutex_lock(&philo->data->dead_body);
 	if (philo->state == DEAD && philo->data->someone_is_dead == 0)//pour s'assure que juste ONE philo rentre là et s'affiche.
 	{
