@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 09:17:17 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 13:50:52 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,21 @@
 
 /*		FIVE FUNCTIONS			*/
 
-//take the first fork;
+//take the first fork
+//philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
 	if (is_dead(philo) == false)
 	{
-		// if (philo->id - 1 < 1) //to get the first philo NO NEED
-		// 	philo->id = philo->data->nb_philos; //to refer to his neighbor NO NEED
-		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]); //philo 1 takes fork_mutex 0 and so on...
-		print_message(philo, "has taken a fork"); //send a str; don't forget mutex_lock print_mutex
+		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
+		print_message(philo, "has taken a fork");
 	}
-	// else
-	// 	pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]); //utile encore ou pas?? Regle pas le drift
 }
 
 //take second fork
+//2nd if: in case of one philo and can't take another fork
+//print took the 2nd fork and eating right away. To reduce drift and time
+//between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
 	if (is_dead(philo) == false)
@@ -40,34 +40,31 @@ void	take_second_fork(t_philo *philo)
 			philo->data->someone_is_dead = 1;
 			pthread_mutex_unlock(&philo->data->really_dead);
 			stop_simulation(philo);
-			return;
+			return ;
 		}
-		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
-		print_message(philo, "has taken a 2nd fork"); //send a str; don't forget mutex_lock print_mutex
+		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id)
+			% philo->data->nb_philos]);
+		print_message(philo, "has taken a 2nd fork");
 		print_message(philo, "is eating");
 	}
-	// else
-	// {
-	// 	pthread_mutex_unlock(&philo->data->forks_mutex[philo->id - 1]);
-	// 	pthread_mutex_unlock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
-	// }
 }
 
-//then time to eat
+//then time to eat takes care of setting up the time to eat
+//keep track of last_meal and counts the number of time that they have eaten
 void	eat(t_philo *philo)
 {
-	philo->state = EATING; //superflu, parce qu'on ne sait pas lequel; il faudrait un tableau meme chose pour tous les state
-//	print_message(philo, "is eating");
-	pthread_mutex_lock(&philo->data->last_meal_mutex); //seulement un philo a la fois va lire la variable; juste lui qui va lire sa propre variable
+	philo->state = EATING;
+	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp() - philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->last_meal_mutex);
-	if (philo->data->time_to_die < philo->data->time_to_eat) // to calculate the time to eat: here it will die before ending his meal
-		ms_sleep(philo->data->time_to_die); //then eat until dies
-	else //may not need this shit (if... else)
-		ms_sleep(philo->data->time_to_eat); //else eat for the time_to_eat determined
-	//ms_sleep(philo->data->time_to_eat);
+	// if (philo->data->time_to_die < philo->data->time_to_eat)
+	// 	ms_sleep(philo->data->time_to_die);
+	// else
+	// 	ms_sleep(philo->data->time_to_eat);
+	ms_sleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
-	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
+	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
+			% philo->data->nb_philos]));
 	pthread_mutex_lock(&philo->data->full_mutex);
 	philo->nb_meals_enjoyed++;
 	pthread_mutex_unlock(&philo->data->full_mutex);
@@ -76,8 +73,6 @@ void	eat(t_philo *philo)
 		pthread_mutex_lock(&philo->data->count_full);
 		philo->data->nb_full_philos += 1;
 		pthread_mutex_unlock(&philo->data->count_full);
-		// pthread_mutex_unlock(&philo->data->full_mutex);
-		//pthread_mutex_unlock(&philo->data->full_mutex);
 	}
 }
 
@@ -88,7 +83,8 @@ void	time_to_sleep(t_philo *philo)
 	{
 		philo->state = SLEEPING;
 		print_message(philo, "is sleeping");
-		if ((philo->data->time_to_eat + philo->data->time_to_sleep) > philo->data->time_to_die)
+		if ((philo->data->time_to_eat + philo->data->time_to_sleep)
+			> philo->data->time_to_die)
 		{
 			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
 			pthread_mutex_lock(&philo->data->really_dead);
@@ -97,16 +93,5 @@ void	time_to_sleep(t_philo *philo)
 		}
 		else
 			ms_sleep(philo->data->time_to_sleep);
-	}
-}
-
-//time to think
-void	think(t_philo *philo)
-{
-	if (is_dead(philo) == false)
-	{
-		philo->state = THINKING;
-		print_message(philo, "is thinking");
-		//ms_sleep(philo->data->time_to_eat / 2);
 	}
 }

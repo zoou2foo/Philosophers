@@ -6,11 +6,13 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:31:45 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/28 12:03:44 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 13:52:30 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+/*		FOUR FUNCTIONS		*/
 
 int	ft_strlen(char *str)
 {
@@ -22,7 +24,7 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
-int	ft_atoi(char *str) //change args in int
+int	ft_atoi(char *str)
 {
 	int	i;
 	int	sign;
@@ -54,7 +56,7 @@ time_t	time_stamp(void)
 	struct timeval	current_time;
 
 	gettimeofday(&current_time, NULL);
-	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000)); //tv_sec (seconds) tv_usec(microseconds) => formula to put it in milliseconds
+	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
 
 void	ms_sleep(int ms)
@@ -66,7 +68,6 @@ void	ms_sleep(int ms)
 	{
 		if (time_stamp() >= goal)
 			return ;
-			//break ;
 		usleep(50);
 	}
 }

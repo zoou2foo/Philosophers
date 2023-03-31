@@ -6,13 +6,12 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 09:15:21 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 13:58:11 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
-
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -24,26 +23,24 @@
 # define ERR_NB_ARGS	"Incorrect number of arguments. It has to be 5 or 6\n"
 # define ERR_ARGS		"Incorrect type of arguments. Only positive numbers\n"
 # define ERR_PHILO		"Incorrect number of philosophers at the table\n"
-# define ERR_TYPE_ARGS	"Incorrect type of arguments. Need to be positive numbers and higher numbers\n"
+# define ERR_TYPE_ARGS	"Incorrect type of args. + numbers and higher numbers\n"
 # define ERR_IN_TIME	"Error: no negative time"
 # define ERR_INT		"Error: int too long"
 # define ERR_THREAD		"Error to create thread"
 
 typedef enum {
-	THINKING,
 	EATING,
 	SLEEPING,
-	FULL,
 	ALIVE,
 	DEAD
 }	state_t;
-typedef struct s_philo{ //struct for each philo; need to add id?
-	state_t				state; //to keep track of their state; see above
-	int					id; //philo's id
-	time_t				last_meal; //to know the last time they ate
-	int					nb_meals_enjoyed; //to keep track of number of times that they ate
-	struct s_data		*data; //give access to info in data struct
-	pthread_t			philo_th; //comme c'est une struct pour chaque philo; c'est un thread
+typedef struct s_philo{
+	state_t				state;
+	int					id;
+	time_t				last_meal;
+	int					nb_meals_enjoyed;
+	struct s_data		*data;
+	pthread_t			philo_th;
 }						t_philo;
 
 typedef struct s_data{ //parameters needed for simulation (rules)
@@ -61,8 +58,8 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	pthread_mutex_t			dead_body;
 	pthread_mutex_t			really_dead;
 	pthread_mutex_t			print_mutex;
-	pthread_mutex_t			forks_mutex[200]; //each philo will need its own. Le philo a besoin de prendre la fourchette de son voisin. Pas plus de 200 fourchettes, car pas plus que 200 philos. Le philo ne peut pas avoir acces aux 200, donc, ne doit pas etre dans la struc du philo
-	struct s_philo			philo_struct[200]; //chaque philo est une STRUCT pour avoir acces aux info(forks, son id, etc..)
+	pthread_mutex_t			forks_mutex[200];
+	struct s_philo			philo_struct[200];
 }							t_data;
 
 /*		PARSING 		*/
@@ -83,7 +80,6 @@ void	take_first_fork(t_philo *philo);
 void	take_second_fork(t_philo *philo);
 void	eat(t_philo *philo);
 void	time_to_sleep(t_philo *philo);
-void	think(t_philo *philo);
 
 /*		INIT_STUFF		*/
 void	init_philo(t_data *data, int i);

@@ -6,57 +6,55 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 09:18:25 by vjean            ###   ########.fr       */
+/*   Updated: 2023/03/31 13:52:05 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
 /*		FOUR FUNCTIONS			*/
+
 //function to print_messages
 void	print_message(t_philo *philo, char *str)
 {
-	if (is_dead(philo) == false) //still needs to check if anybody is dead
+	if (is_dead(philo) == false)
 	{
-		pthread_mutex_lock(&philo->data->print_mutex); //lock mutex to print
-		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
-		pthread_mutex_unlock(&philo->data->print_mutex); //unlock mutex to print
-		//pthread_mutex_unlock(&philo->data->dead_body);
+		pthread_mutex_lock(&philo->data->print_mutex);
+		printf("%ld - Philo %d %s\n", time_stamp()
+			- philo->data->start_time, philo->id, str);
+		pthread_mutex_unlock(&philo->data->print_mutex);
 	}
 }
 
+//thread function
+//infinite loop and then, if condition to check if anyone dies or if they have
+//all eaten enough to break
 void	*routine(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
-		//think(philo); // peut-etre problematique a cause de ce que je peux recevoir en parametres
 		usleep(15000);
-	while (1) //possible data_race -> Solution: boucle infini, if (is_dead == false), dead_body mutex before if and unlock after
+	while (1)
 	{
-		//pthread_mutex_lock(&philo->data->dead_body); //if I have the mutex here; only one thread can do the routine
 		pthread_mutex_lock(&philo->data->full_mutex);
-		if (is_dead(philo) == false && (philo->data->nb_full_philos != philo->data->nb_philos))
+		if (is_dead(philo) == false
+			&& (philo->data->nb_full_philos != philo->data->nb_philos))
 		{
 			pthread_mutex_unlock(&philo->data->full_mutex);
-			take_first_fork(philo); //in the function; check again if alive or dead ->mutex in to lock fork; send to print_message (mutex pour print)
-			take_second_fork(philo); //in the function; check again if alive or dead
-			//pthread_mutex_unlock(&philo->data->dead_body);
-			eat(philo); //in the function; check again if alive or dead ->mutex eat
-			time_to_sleep(philo); //in the function; check again if alive or dead
+			take_first_fork(philo);
+			take_second_fork(philo);
+			eat(philo);
+			time_to_sleep(philo);
 			print_message(philo, "is thinking");
-			//think(philo); //in the function; check again if alive or dead ->fin tuer les philos.
 		}
 		else
 		{
 			pthread_mutex_unlock(&philo->data->full_mutex);
-			//pthread_mutex_unlock(&philo->data->dead_body);
 			break ;
 		}
-		//pthread_mutex_unlock(&philo->data->dead_body);
 	}
-	//stop_simulation(philo);
 	return (NULL);
 }
 
@@ -66,15 +64,16 @@ void	wait_for_threads(t_data *data)
 	int	i;
 
 	i = 0;
-	while (i < data->nb_philos)//loop to join(wait) each thread
+	while (i < data->nb_philos)
 	{
 		if (pthread_join(data->philo_struct[i].philo_th, NULL) != 0)
-			return ; //function to return
+			return ;
 		pthread_mutex_destroy(&data->forks_mutex[i]);
 		i++;
 	}
 }
 
+//starting the simulation
 void	execute(t_data *data)
 {
 	int		i;
@@ -82,25 +81,16 @@ void	execute(t_data *data)
 	init_singles_mutex(data);
 	init_philo_mutex(data);
 	i = 0;
-	data->start_time = time_stamp();//get the start time of the simulation
-	while (i < data->nb_philos) //loop to create the threads
+	data->start_time = time_stamp();
+	while (i < data->nb_philos)
 	{
-		if (pthread_create(&(data->philo_struct[i].philo_th), NULL, &routine, &(data->philo_struct[i])) != 0) //sending the thread, NULL, thread function and the struct for each philo
+		if (pthread_create(&(data->philo_struct[i].philo_th), NULL,
+				&routine, &(data->philo_struct[i])) != 0)
 		{
 			printf("%s\n", ERR_THREAD);
 			return ;
 		}
-		//usleep(100); //to give time for each philo to take a fork
 		i++;
 	}
-	wait_for_threads(data); //pthread_join: ils ne seront pas join tant qu'ils n'ont pas fini leur routine() (thread function qui est leur job)
-	// if (data->someone_is_dead == 1) //mutex avant et apres pour eviter data race; possible
-	// 	exit_simulation(data);
-	//6th arg to check LATER
-	// if (data->nb_to_eat)
-	// 	wait_for_full(data);
-	// pthread_mutex_destroy(&data->print_mutex);
-	// pthread_mutex_destroy(&data->full_mutex);
+	wait_for_threads(data);
 }
-
-//compiler avec fsanitize pour voir data race =thread. ou =address (a verifier)
