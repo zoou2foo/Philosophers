@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 12:01:05 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 10:03:46 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,15 @@ void	print_message(t_philo *philo, char *str)
 	if (is_dead(philo) == false)
 	{
 		pthread_mutex_lock(&philo->data->print_mutex);
-		printf("%ld - Philo %d %s\n", time_stamp() - philo->data->start_time, philo->id, str);
+		printf("%ld - Philo %d %s\n", time_stamp()
+			- philo->data->start_time, philo->id, str);
 		pthread_mutex_unlock(&philo->data->print_mutex);
 	}
 }
 
-//thread function. Infinite loop where I look for a dead philo or if they have
-//eaten enough. Then break and return (NULL);
+//thread function
+//infinite loop and then, if condition to check if anyone dies or if they have
+//all eaten enough to break
 void	*routine(void *arg)
 {
 	t_philo	*philo;
@@ -37,7 +39,8 @@ void	*routine(void *arg)
 	while (1)
 	{
 		pthread_mutex_lock(&philo->data->full_mutex);
-		if (is_dead(philo) == false && (philo->data->nb_full_philos != philo->data->nb_philos))
+		if (is_dead(philo) == false
+			&& (philo->data->nb_full_philos != philo->data->nb_philos))
 		{
 			pthread_mutex_unlock(&philo->data->full_mutex);
 			take_first_fork(philo);
@@ -70,7 +73,7 @@ void	wait_for_threads(t_data *data)
 	}
 }
 
-//function to start the simulation
+//starting the simulation
 void	execute(t_data *data)
 {
 	int		i;
@@ -81,7 +84,8 @@ void	execute(t_data *data)
 	data->start_time = time_stamp();
 	while (i < data->nb_philos)
 	{
-		if (pthread_create(&(data->philo_struct[i].philo_th), NULL, &routine, &(data->philo_struct[i])) != 0)
+		if (pthread_create(&(data->philo_struct[i].philo_th), NULL,
+				&routine, &(data->philo_struct[i])) != 0)
 		{
 			printf("%s\n", ERR_THREAD);
 			return ;

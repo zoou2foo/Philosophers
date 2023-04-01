@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 11:43:22 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 10:03:14 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /*		FIVE FUNCTIONS			*/
 
-//take the first fork; need mutex to lock fork, just before the print_mess
+//take the first fork
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
@@ -26,9 +26,9 @@ void	take_first_fork(t_philo *philo)
 }
 
 //take second fork
-//2nd if: to deal with one philo and can't take a second fork
-//lock 2nd fork and print both taken a 2nd fork and eating. To reduce time
-//before printing the eating message
+//2nd if: in case of one philo and can't take another fork
+//print took the 2nd fork and eating right away. To reduce drift and time
+//between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
 	if (is_dead(philo) == false)
@@ -40,24 +40,27 @@ void	take_second_fork(t_philo *philo)
 			philo->data->someone_is_dead = 1;
 			pthread_mutex_unlock(&philo->data->really_dead);
 			stop_simulation(philo);
-			return;
+			return ;
 		}
-		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]);
+		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id)
+			% philo->data->nb_philos]);
 		print_message(philo, "has taken a 2nd fork");
 		print_message(philo, "is eating");
 	}
 }
 
-//then time to eat: setup the time to eat; to keep track of last_meal
-//keep track of number of times that they have eaten
+//then time to eat takes care of setting up the time to eat
+//keep track of last_meal and counts the number of time that they have eaten
 void	eat(t_philo *philo)
 {
+	philo->state = EATING;
 	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp() - philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->last_meal_mutex);
 	ms_sleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
-	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id) % philo->data->nb_philos]));
+	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
+			% philo->data->nb_philos]));
 	pthread_mutex_lock(&philo->data->full_mutex);
 	philo->nb_meals_enjoyed++;
 	pthread_mutex_unlock(&philo->data->full_mutex);
@@ -77,7 +80,8 @@ void	time_to_sleep(t_philo *philo)
 	{
 		philo->state = SLEEPING;
 		print_message(philo, "is sleeping");
-		if ((philo->data->time_to_eat + philo->data->time_to_sleep) > philo->data->time_to_die)
+		if ((philo->data->time_to_eat + philo->data->time_to_sleep)
+			> philo->data->time_to_die)
 		{
 			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
 			pthread_mutex_lock(&philo->data->really_dead);
@@ -86,15 +90,5 @@ void	time_to_sleep(t_philo *philo)
 		}
 		else
 			ms_sleep(philo->data->time_to_sleep);
-	}
-}
-
-//time to think
-void	think(t_philo *philo)
-{
-	if (is_dead(philo) == false)
-	{
-		philo->state = THINKING;
-		print_message(philo, "is thinking");
 	}
 }

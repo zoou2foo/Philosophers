@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:30:49 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 12:05:04 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 10:03:58 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /*		FOUR FUNCTIONS		*/
 
-//function to initialize main variables in my data struct
+//to initialize the data struct
 void	setup_datastruct(t_data *data, char **str)
 {
 	data->nb_philos = ft_atoi(str[1]);
@@ -28,7 +28,7 @@ void	setup_datastruct(t_data *data, char **str)
 		data->nb_to_eat = ft_atoi(str[5]);
 }
 
-//function to init each philo struct
+//initialize each philo struct
 void	init_philo(t_data *data, int i)
 {
 	data->philo_struct[i].id = i + 1;
@@ -38,7 +38,7 @@ void	init_philo(t_data *data, int i)
 	pthread_mutex_init(&data->forks_mutex[i], NULL);
 }
 
-//function to initialize each mutex
+//initialize all the mutexes
 void	init_singles_mutex(t_data *data)
 {
 	pthread_mutex_init(&(data->print_mutex), NULL);
@@ -46,10 +46,10 @@ void	init_singles_mutex(t_data *data)
 	pthread_mutex_init(&(data->count_full), NULL);
 	pthread_mutex_init(&data->dead_body, NULL);
 	pthread_mutex_init(&data->really_dead, NULL);
-	//pthread_mutex_init(&data->last_meal_mutex, NULL);
+	pthread_mutex_init(&data->last_meal_mutex, NULL);
 }
 
-//loop function to init each philo struct
+//function with the loop to initialize all the philo struct
 void	init_philo_mutex(t_data *data)
 {
 	int	i;

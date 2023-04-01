@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 11:56:43 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 10:03:30 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 //to check if philo dies OR there is a dead body
 //if condition: to make sure that only ONE philo gets in and change the var
-//else ->if condition to check if another philo died
+//else ->if condition: to check if there is another philo died
 bool	is_dead(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->dead_body);
@@ -42,10 +42,11 @@ bool	is_dead(t_philo *philo)
 		pthread_mutex_unlock(&philo->data->dead_body);
 	}
 	pthread_mutex_unlock(&philo->data->dead_body);
-	return(false);
+	return (false);
 }
 
-//time to unlock any forks_mutex and destroy any mutex
+//function to unlock any forks_mutex left and destroy any mutex
+//before quitting the program
 void	exit_simulation(t_data *data)
 {
 	int	i;
@@ -69,11 +70,12 @@ void	exit_simulation(t_data *data)
 	pthread_mutex_destroy(&data->full_mutex);
 }
 
-//start the process to stop simulation when someone is dead
+//function to start the process to stop the simulation
 void	stop_simulation(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->print_mutex);
-	printf("%ld - Philo %d is dead\n", time_stamp() - philo->data->start_time, philo->id);
+	printf("%ld - Philo %d is dead\n", time_stamp()
+		- philo->data->start_time, philo->id);
 	pthread_mutex_unlock(&philo->data->print_mutex);
 	exit_simulation(philo->data);
 }

@@ -6,11 +6,13 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:17:01 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/22 11:09:25 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 09:41:13 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
+
+/*		THREE FUNCTIONS		*/
 
 int	check_args(char **str)
 {
@@ -37,7 +39,7 @@ int	check_args(char **str)
 
 int	check_len(char **str)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	while (str[i])
@@ -52,7 +54,8 @@ int	check_len(char **str)
 	return (0);
 }
 
-int	parsing(char **str, t_data *data) //time to check args and do atoi with args
+//time to check args and do atoi with args
+int	parsing(char **str, t_data *data)
 {
 	if (check_args(str) == 0 || check_len(str) == 0)
 	{
@@ -64,6 +67,6 @@ int	parsing(char **str, t_data *data) //time to check args and do atoi with args
 		}
 	}
 	else
-		return(1);
+		return (1);
 	return (0);
 }
