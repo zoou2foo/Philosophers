@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_up.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/01 15:36:21 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 19:13:30 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 //else ->if condition: to check if there is another philo died
 bool	is_dead(t_philo *philo)
 {
-	__INFO__
 	pthread_mutex_lock(&philo->data->dead_body);
 	if (philo->state == DEAD && philo->data->someone_is_dead == 0)
 	{
@@ -50,7 +49,6 @@ bool	is_dead(t_philo *philo)
 //before quitting the program
 void	exit_simulation(t_data *data)
 {
-	__INFO__
 	int	i;
 
 	i = 0;

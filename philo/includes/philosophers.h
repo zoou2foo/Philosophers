@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/01 15:50:56 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 19:17:52 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@
 # define ERR_INT		"Error: int too long"
 # define ERR_THREAD		"Error to create thread"
 
-#if debug
-	#define __INFO__    printf("in file %s at line %d in fonction %s\n", __FILE_NAME__, __LINE__, __PRETTY_FUNCTION__);
-#else
-	#define __INFO__ 
-#endif
+// #if debug
+// 	#define __INFO__    printf("in file %s at line %d in fonction %s\n", __FILE_NAME__, __LINE__, __PRETTY_FUNCTION__);
+// #else
+// 	#define __INFO__ 
+// #endif
 typedef enum e_state{
 	EATING,
 	SLEEPING,

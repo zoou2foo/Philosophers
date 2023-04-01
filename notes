@@ -1,0 +1,36 @@
+
+in routine()
+while (status_on)
+//tant que status on
+		//take les forks
+		//eat
+		//time to sleep
+		//print message
+
+
+wait_for_threads()
+
+i = 0;
+	while (tant que personne n;est mort)//variable a creer dans data et creer un mutex
+	{
+		while(i < data->nb_philos)
+		{
+			verifi philo[i]; //si un meurt; mutex lock print; mutex lock fork
+			i++;
+		}
+		usleep();
+		i = 0;
+	}
+	print message 
+	while( ){
+
+		destoy; mutex et sans pthread_join
+	}
+
+init_philo()
+	if (si j'ai pas un 6e)
+		data->nb_to_eat = -1
+	else
+		data->nb_to_eat = argv[6]; //ensuite tu decremente
+	if (str[5] != NULL)
+		data->nb_to_eat = ft_atoi(str[5]);

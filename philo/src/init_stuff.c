@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_stuff.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
+/*   By: valeriejean <valeriejean@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:30:49 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/01 16:39:59 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 19:16:58 by valeriejean      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,14 @@ void	setup_datastruct(t_data *data, char **str)
 	data->time_to_sleep = ft_atoi(str[4]);
 	data->someone_is_dead = 0;
 	data->nb_full_philos = 0;
+	data->nb_to_eat = 0;
+	if (str[5] != NULL)
+		data->nb_to_eat = ft_atoi(str[5]);
 }
 
 //initialize each philo struct
 void	init_philo(t_data *data, int i)
 {
-	if (si j'ai pas un 6e)
-		data->nb_to_eat = -1
-	else
-		data->nb_to_eat = argv[6]; //ensuite tu decremente
-	if (str[5] != NULL)
-		data->nb_to_eat = ft_atoi(str[5]);
 	data->philo_struct[i].id = i + 1;
 	data->philo_struct[i].data = data;
 	data->philo_struct[i].last_meal = 0;
