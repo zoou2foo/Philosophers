@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:17:01 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/31 13:52:21 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 09:41:13 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	check_args(char **str)
 
 int	check_len(char **str)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	while (str[i])

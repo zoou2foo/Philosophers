@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/03/31 13:58:11 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 09:51:24 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,14 @@
 # define ERR_INT		"Error: int too long"
 # define ERR_THREAD		"Error to create thread"
 
-typedef enum {
+typedef enum e_state{
 	EATING,
 	SLEEPING,
 	ALIVE,
 	DEAD
-}	state_t;
+}	t_state;
 typedef struct s_philo{
-	state_t				state;
+	t_state				state;
 	int					id;
 	time_t				last_meal;
 	int					nb_meals_enjoyed;
