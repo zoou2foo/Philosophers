@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/01 09:52:50 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 15:36:09 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
+	__INFO__
 	if (is_dead(philo) == false)
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
@@ -31,6 +32,7 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
+	__INFO__
 	if (is_dead(philo) == false)
 	{
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
@@ -53,6 +55,7 @@ void	take_second_fork(t_philo *philo)
 //keep track of last_meal and counts the number of time that they have eaten
 void	eat(t_philo *philo)
 {
+	__INFO__
 	philo->state = EATING;
 	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp() - philo->data->start_time;
@@ -75,6 +78,7 @@ void	eat(t_philo *philo)
 //putting the philo to sleep
 void	time_to_sleep(t_philo *philo)
 {
+	__INFO__
 	if (is_dead(philo) == false)
 	{
 		philo->state = SLEEPING;

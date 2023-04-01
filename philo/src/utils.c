@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/11 16:31:45 by valeriejean       #+#    #+#             */
-/*   Updated: 2023/03/31 13:52:30 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/01 15:37:42 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ int	ft_atoi(char *str)
 
 time_t	time_stamp(void)
 {
+	__INFO__
 	struct timeval	current_time;
 
 	gettimeofday(&current_time, NULL);
@@ -61,6 +62,7 @@ time_t	time_stamp(void)
 
 void	ms_sleep(int ms)
 {
+	__INFO__
 	time_t	goal;
 
 	goal = time_stamp() + ms;
