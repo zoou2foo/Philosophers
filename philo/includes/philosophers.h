@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 09:42:29 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 11:16:32 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 #if debug
 	#define __INFO__    printf("in file %s at line %d in fonction %s\n", __FILE_NAME__, __LINE__, __PRETTY_FUNCTION__);
 #else
-	#define __INFO__ 
+	#define __INFO__
 #endif
 */
 typedef enum e_state{
@@ -60,11 +60,11 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	int						someone_is_dead;
 	int						nb_full_philos;
 	time_t					start_time;
-	pthread_mutex_t			full_mutex;
-	pthread_mutex_t			count_full;
-	pthread_mutex_t			last_meal_mutex;
-	pthread_mutex_t			dead_body;
-	pthread_mutex_t			really_dead;
+	pthread_mutex_t			full_mutex; //using it in eat()
+	pthread_mutex_t			count_full; //using it in eat()
+	pthread_mutex_t			last_meal_mutex; //using it in eat()
+	pthread_mutex_t			dead_body; //using it in actions for state
+	pthread_mutex_t			really_dead; //using it in check_up with someone_is_dead
 	pthread_mutex_t			print_mutex;
 	pthread_mutex_t			forks_mutex[200];
 	struct s_philo			philo_struct[200];

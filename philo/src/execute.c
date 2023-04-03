@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 10:52:38 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 11:36:06 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,20 +52,27 @@ void	wait_for_threads(t_data *data)
 	int	i;
 
 	i = 0;
+	//pthread_mutex_lock(&data->really_dead); does not work to fix datarace
+	//pthread_mutex_lock(&data->dead_body); does not work to fix datarace
 	while (data->someone_is_dead != 1)//variable a creer dans data et creer un mutex //FIXME data race
 	{
+		//pthread_mutex_unlock(&data->really_dead); does not work to fix datarace
 		while(i < data->nb_philos)
 		{
 			if (data->philo_struct[i].state == DEAD)  //si un meurt; mutex lock print; mutex lock fork //FIXME data race
 			{
+				//pthread_mutex_unlock(&data->dead_body);
 				data->status = 0;
 				pthread_mutex_lock(&data->print_mutex);
 			}
+			//pthread_mutex_unlock(&data->dead_body);
 			i++;
 		}
 		usleep(1000); //might need to adjust
 		i = 0;
+		//pthread_mutex_unlock(&data->dead_body);
 	}
+	//pthread_mutex_unlock(&data->really_dead); does not work to fix datarace
 	pthread_mutex_lock(&data->print_mutex);
 	printf("%ld - Philo %d is dead\n", time_stamp()
 		- data->start_time, data->philo_struct[i].id);

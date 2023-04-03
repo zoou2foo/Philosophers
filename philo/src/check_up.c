@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 10:52:17 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 11:32:04 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,29 +19,29 @@
 //else ->if condition: to check if there is another philo died
 bool	is_dead(t_philo *philo)
 {
-	//pthread_mutex_lock(&philo->data->dead_body);
+	pthread_mutex_lock(&philo->data->dead_body);
 	if (philo->state == DEAD)
 	{
-		pthread_mutex_lock(&philo->data->really_dead);
+		//pthread_mutex_lock(&philo->data->really_dead);
 		philo->data->someone_is_dead = 1; //FIXME data race...
-		pthread_mutex_unlock(&philo->data->really_dead);
-		//pthread_mutex_unlock(&philo->data->dead_body);
+		//pthread_mutex_unlock(&philo->data->really_dead);
+		pthread_mutex_unlock(&philo->data->dead_body);
 		//stop_simulation(philo);
 		return (true);
 	}
 	else
 	{
-		pthread_mutex_lock(&philo->data->really_dead);
+		//pthread_mutex_lock(&philo->data->really_dead);
 		if (philo->data->someone_is_dead == 1)
 		{
-			pthread_mutex_unlock(&philo->data->really_dead);
-			//pthread_mutex_unlock(&philo->data->dead_body);
+			//pthread_mutex_unlock(&philo->data->really_dead);
+			pthread_mutex_unlock(&philo->data->dead_body);
 			return (true);
 		}
-		pthread_mutex_unlock(&philo->data->really_dead);
+		//pthread_mutex_unlock(&philo->data->really_dead);
 		//pthread_mutex_unlock(&philo->data->dead_body);
 	}
-	//pthread_mutex_unlock(&philo->data->dead_body);
+	pthread_mutex_unlock(&philo->data->dead_body);
 	return (false);
 }
 
