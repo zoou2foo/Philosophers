@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 09:41:37 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 10:36:36 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,6 @@ void	print_message(t_philo *philo, char *str)
 }
 
 //thread function
-//infinite loop and then, if condition to check if anyone dies or if they have
-//all eaten enough to break
-/* NEW exec: //tant que status on
-		//take les forks
-		//eat
-		//time to sleep
-		//print message*/
 void	*routine(void *arg)
 {
 	t_philo	*philo;
