@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/01 15:36:21 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 09:32:52 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,14 @@
 //else ->if condition: to check if there is another philo died
 bool	is_dead(t_philo *philo)
 {
-	__INFO__
 	pthread_mutex_lock(&philo->data->dead_body);
-	if (philo->state == DEAD && philo->data->someone_is_dead == 0)
+	if (philo->state == DEAD)
 	{
 		pthread_mutex_lock(&philo->data->really_dead);
 		philo->data->someone_is_dead = 1;
 		pthread_mutex_unlock(&philo->data->really_dead);
 		pthread_mutex_unlock(&philo->data->dead_body);
-		stop_simulation(philo);
+		//stop_simulation(philo);
 		return (true);
 	}
 	else
@@ -50,7 +49,6 @@ bool	is_dead(t_philo *philo)
 //before quitting the program
 void	exit_simulation(t_data *data)
 {
-	__INFO__
 	int	i;
 
 	i = 0;

@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/01 15:36:09 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 09:46:08 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	__INFO__
 	if (is_dead(philo) == false)
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
@@ -32,7 +31,6 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	__INFO__
 	if (is_dead(philo) == false)
 	{
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
@@ -40,8 +38,9 @@ void	take_second_fork(t_philo *philo)
 			ms_sleep(philo->data->time_to_die);
 			pthread_mutex_lock(&philo->data->really_dead);
 			philo->data->someone_is_dead = 1;
+			philo->state = DEAD;
 			pthread_mutex_unlock(&philo->data->really_dead);
-			stop_simulation(philo);
+			//stop_simulation(philo);
 			return ;
 		}
 		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id)
@@ -55,7 +54,6 @@ void	take_second_fork(t_philo *philo)
 //keep track of last_meal and counts the number of time that they have eaten
 void	eat(t_philo *philo)
 {
-	__INFO__
 	philo->state = EATING;
 	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp() - philo->data->start_time;
@@ -67,7 +65,7 @@ void	eat(t_philo *philo)
 	pthread_mutex_lock(&philo->data->full_mutex);
 	philo->nb_meals_enjoyed++;
 	pthread_mutex_unlock(&philo->data->full_mutex);
-	if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
+	if (philo->nb_meals_enjoyed == philo->nb_to_eat)
 	{
 		pthread_mutex_lock(&philo->data->count_full);
 		philo->data->nb_full_philos += 1;
@@ -78,7 +76,6 @@ void	eat(t_philo *philo)
 //putting the philo to sleep
 void	time_to_sleep(t_philo *philo)
 {
-	__INFO__
 	if (is_dead(philo) == false)
 	{
 		philo->state = SLEEPING;
