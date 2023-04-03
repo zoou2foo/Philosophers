@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 11:16:32 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 15:21:33 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,11 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	pthread_mutex_t			full_mutex; //using it in eat()
 	pthread_mutex_t			count_full; //using it in eat()
 	pthread_mutex_t			last_meal_mutex; //using it in eat()
-	pthread_mutex_t			dead_body; //using it in actions for state
-	pthread_mutex_t			really_dead; //using it in check_up with someone_is_dead
+	pthread_mutex_t			someone_is_dead_mutex; //using it in actions for state
+	pthread_mutex_t			state_mutex; //using it in check_up with someone_is_dead
 	pthread_mutex_t			print_mutex;
+	pthread_mutex_t			reading_mutex;
+	pthread_mutex_t			status_mutex;
 	pthread_mutex_t			forks_mutex[200];
 	struct s_philo			philo_struct[200];
 }							t_data;

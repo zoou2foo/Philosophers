@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 11:36:06 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 15:22:53 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	if (philo->id % 2 == 0)
 		usleep(15000);
+	pthread_mutex_lock(&philo->data->status_mutex);
 	while (philo->data->status == 1) //status on
 	{
+		pthread_mutex_unlock(&philo->data->status_mutex);
 		take_first_fork(philo);
 		take_second_fork(philo);
 		eat(philo);
@@ -43,6 +45,7 @@ void	*routine(void *arg)
 		print_message(philo, "is thinking");
 
 	}
+	pthread_mutex_unlock(&philo->data->status_mutex);
 	return (NULL);
 }
 
@@ -52,27 +55,29 @@ void	wait_for_threads(t_data *data)
 	int	i;
 
 	i = 0;
-	//pthread_mutex_lock(&data->really_dead); does not work to fix datarace
-	//pthread_mutex_lock(&data->dead_body); does not work to fix datarace
+	pthread_mutex_lock(&data->someone_is_dead_mutex); //does not work to fix datarace
 	while (data->someone_is_dead != 1)//variable a creer dans data et creer un mutex //FIXME data race
 	{
-		//pthread_mutex_unlock(&data->really_dead); does not work to fix datarace
+		pthread_mutex_unlock(&data->someone_is_dead_mutex); //does not work to fix datarace
 		while(i < data->nb_philos)
 		{
-			if (data->philo_struct[i].state == DEAD)  //si un meurt; mutex lock print; mutex lock fork //FIXME data race
+			pthread_mutex_lock(&data->state_mutex);
+			if (data->philo_struct[i].state == DEAD)  //si un meurt; mutex lock print; mutex lock fork //FIXED data race
 			{
-				//pthread_mutex_unlock(&data->dead_body);
+				pthread_mutex_unlock(&data->state_mutex);
+				pthread_mutex_lock(&data->status_mutex);
 				data->status = 0;
+				pthread_mutex_unlock(&data->status_mutex);
 				pthread_mutex_lock(&data->print_mutex);
 			}
-			//pthread_mutex_unlock(&data->dead_body);
+			pthread_mutex_unlock(&data->state_mutex);
 			i++;
 		}
 		usleep(1000); //might need to adjust
 		i = 0;
 		//pthread_mutex_unlock(&data->dead_body);
 	}
-	//pthread_mutex_unlock(&data->really_dead); does not work to fix datarace
+	//pthread_mutex_unlock(&data->someone_is_dead_mutex); //does not work to fix datarace
 	pthread_mutex_lock(&data->print_mutex);
 	printf("%ld - Philo %d is dead\n", time_stamp()
 		- data->start_time, data->philo_struct[i].id);
@@ -84,7 +89,9 @@ void	wait_for_threads(t_data *data)
 		i++;
 	}
 	pthread_mutex_destroy(&data->print_mutex);
-	pthread_mutex_destroy(&data->dead_body);
+	pthread_mutex_destroy(&data->someone_is_dead_mutex);
+	pthread_mutex_destroy(&data->state_mutex);
+	pthread_mutex_destroy(&data->status_mutex);
 	pthread_mutex_destroy(&data->last_meal_mutex);
 	pthread_mutex_destroy(&data->full_mutex);
 }

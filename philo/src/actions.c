@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 11:22:25 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 15:19:30 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,12 @@ void	take_second_fork(t_philo *philo)
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
 			ms_sleep(philo->data->time_to_die);
-			pthread_mutex_lock(&philo->data->really_dead);
-			philo->data->someone_is_dead = 1; //FIXME data race...
-			pthread_mutex_unlock(&philo->data->really_dead);
-			pthread_mutex_lock(&philo->data->dead_body); //maybe with a different mutex
-			philo->state = DEAD; //FIXME data race...
-			pthread_mutex_unlock(&philo->data->dead_body);
+			pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
+			philo->data->someone_is_dead = 1; //FIXED data race...
+			pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
+			pthread_mutex_lock(&philo->data->state_mutex); //maybe with a different mutex
+			philo->state = DEAD; //FIXED data race...
+			pthread_mutex_unlock(&philo->data->state_mutex);
 			//stop_simulation(philo);
 			return ;
 		}
@@ -86,9 +86,9 @@ void	time_to_sleep(t_philo *philo)
 			> philo->data->time_to_die)
 		{
 			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
-			pthread_mutex_lock(&philo->data->dead_body);
-			philo->state = DEAD; //FIXME data race
-			pthread_mutex_unlock(&philo->data->dead_body);
+			pthread_mutex_lock(&philo->data->state_mutex);
+			philo->state = DEAD; //FIXED data race
+			pthread_mutex_unlock(&philo->data->state_mutex);
 		}
 		else
 			ms_sleep(philo->data->time_to_sleep);

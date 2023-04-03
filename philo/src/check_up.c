@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 11:32:04 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 14:40:31 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,34 +14,29 @@
 
 /*			THREE FUNCTIONS			*/
 
-//to check if philo dies OR there is a dead body
-//if condition: to make sure that only ONE philo gets in and change the var
-//else ->if condition: to check if there is another philo died
+//to check if philo dies
 bool	is_dead(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->data->dead_body);
+	pthread_mutex_lock(&philo->data->state_mutex);
 	if (philo->state == DEAD)
 	{
-		//pthread_mutex_lock(&philo->data->really_dead);
+		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
 		philo->data->someone_is_dead = 1; //FIXME data race...
-		//pthread_mutex_unlock(&philo->data->really_dead);
-		pthread_mutex_unlock(&philo->data->dead_body);
+		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
 		//stop_simulation(philo);
 		return (true);
 	}
-	else
-	{
-		//pthread_mutex_lock(&philo->data->really_dead);
-		if (philo->data->someone_is_dead == 1)
-		{
-			//pthread_mutex_unlock(&philo->data->really_dead);
-			pthread_mutex_unlock(&philo->data->dead_body);
-			return (true);
-		}
-		//pthread_mutex_unlock(&philo->data->really_dead);
-		//pthread_mutex_unlock(&philo->data->dead_body);
-	}
-	pthread_mutex_unlock(&philo->data->dead_body);
+	pthread_mutex_unlock(&philo->data->state_mutex);
+	// else
+	// {
+	// 	pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
+	// 	if (philo->data->someone_is_dead == 1) //FIXED data race...
+	// 	{
+	// 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
+	// 		return (true);
+	// 	}
+	// 	pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
+	// }
 	return (false);
 }
 
@@ -65,7 +60,7 @@ void	exit_simulation(t_data *data)
 		i++;
 	}
 	pthread_mutex_destroy(&data->print_mutex);
-	pthread_mutex_destroy(&data->dead_body);
+	pthread_mutex_destroy(&data->someone_is_dead_mutex);
 	pthread_mutex_destroy(&data->last_meal_mutex);
 	pthread_mutex_destroy(&data->full_mutex);
 }
