@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 10:36:36 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/03 10:52:38 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,11 @@ void	wait_for_threads(t_data *data)
 	int	i;
 
 	i = 0;
-	while (data->someone_is_dead != 1)//variable a creer dans data et creer un mutex
+	while (data->someone_is_dead != 1)//variable a creer dans data et creer un mutex //FIXME data race
 	{
 		while(i < data->nb_philos)
 		{
-			if (data->philo_struct[i].state == DEAD)  //si un meurt; mutex lock print; mutex lock fork
+			if (data->philo_struct[i].state == DEAD)  //si un meurt; mutex lock print; mutex lock fork //FIXME data race
 			{
 				data->status = 0;
 				pthread_mutex_lock(&data->print_mutex);
