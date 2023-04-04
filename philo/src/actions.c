@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/01 10:03:14 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 09:48:26 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,13 @@ void	take_second_fork(t_philo *philo)
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
 			ms_sleep(philo->data->time_to_die);
-			pthread_mutex_lock(&philo->data->really_dead);
-			philo->data->someone_is_dead = 1;
-			pthread_mutex_unlock(&philo->data->really_dead);
-			stop_simulation(philo);
+			pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
+			philo->data->someone_is_dead = 1; //FIXED data race...
+			pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
+			pthread_mutex_lock(&philo->data->state_mutex); //maybe with a different mutex
+			philo->state = DEAD; //FIXED data race...
+			pthread_mutex_unlock(&philo->data->state_mutex);
+			//stop_simulation(philo);
 			return ;
 		}
 		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id)
@@ -53,7 +56,7 @@ void	take_second_fork(t_philo *philo)
 //keep track of last_meal and counts the number of time that they have eaten
 void	eat(t_philo *philo)
 {
-	philo->state = EATING;
+	//philo->state = EATING; //FIXED data race;  maybe
 	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp() - philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->last_meal_mutex);
@@ -64,7 +67,7 @@ void	eat(t_philo *philo)
 	pthread_mutex_lock(&philo->data->full_mutex);
 	philo->nb_meals_enjoyed++;
 	pthread_mutex_unlock(&philo->data->full_mutex);
-	if (philo->nb_meals_enjoyed == philo->data->nb_to_eat)
+	if (philo->nb_meals_enjoyed == philo->nb_to_eat)
 	{
 		pthread_mutex_lock(&philo->data->count_full);
 		philo->data->nb_full_philos += 1;
@@ -78,15 +81,15 @@ void	time_to_sleep(t_philo *philo)
 {
 	if (is_dead(philo) == false)
 	{
-		philo->state = SLEEPING;
+		//philo->state = SLEEPING; //possible data race... maybe, so keep commented
 		print_message(philo, "is sleeping");
 		if ((philo->data->time_to_eat + philo->data->time_to_sleep)
 			> philo->data->time_to_die)
 		{
 			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
-			pthread_mutex_lock(&philo->data->really_dead);
-			philo->state = DEAD;
-			pthread_mutex_unlock(&philo->data->really_dead);
+			pthread_mutex_lock(&philo->data->state_mutex);
+			philo->state = DEAD; //FIXED data race
+			pthread_mutex_unlock(&philo->data->state_mutex);
 		}
 		else
 			ms_sleep(philo->data->time_to_sleep);

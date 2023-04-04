@@ -60,7 +60,7 @@ endif
 
 # Compiler and flags
 CC		=	gcc
-CFLAGS	=	-Wall -Werror -Wextra -pthread
+CFLAGS	=	-Wall -Werror -Wextra -pthread #-fsanitize=thread #-D debug
 RACE_F	=	-fsanitize=thread
 RM		=	rm -rf
 MD		=	mkdir -p

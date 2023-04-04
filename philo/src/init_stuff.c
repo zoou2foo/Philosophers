@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:30:49 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/01 10:03:58 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 09:49:03 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,22 @@ void	setup_datastruct(t_data *data, char **str)
 	data->time_to_sleep = ft_atoi(str[4]);
 	data->someone_is_dead = 0;
 	data->nb_full_philos = 0;
-	data->nb_to_eat = 0;
-	if (str[5] != NULL)
-		data->nb_to_eat = ft_atoi(str[5]);
+	data->status = 1;
 }
 
 //initialize each philo struct
-void	init_philo(t_data *data, int i)
+// if (si j'ai pas un 6e)
+// 		data->nb_to_eat = -1
+// 	else
+// 		data->nb_to_eat = argv[6]; //ensuite tu decremente
+// 	if (str[5] != NULL)
+// 		data->nb_to_eat = ft_atoi(str[5]);
+void	init_philo(char **av, t_data *data, int i)
 {
+	if (av[5] == NULL)
+		data->philo_struct[i].nb_to_eat = -1;
+	else
+		data->philo_struct[i].nb_to_eat = ft_atoi(av[5]);
 	data->philo_struct[i].id = i + 1;
 	data->philo_struct[i].data = data;
 	data->philo_struct[i].last_meal = 0;
@@ -44,20 +52,23 @@ void	init_singles_mutex(t_data *data)
 	pthread_mutex_init(&(data->print_mutex), NULL);
 	pthread_mutex_init(&(data->full_mutex), NULL);
 	pthread_mutex_init(&(data->count_full), NULL);
-	pthread_mutex_init(&data->dead_body, NULL);
-	pthread_mutex_init(&data->really_dead, NULL);
+	pthread_mutex_init(&data->someone_is_dead_mutex, NULL);
+	pthread_mutex_init(&data->state_mutex, NULL);
 	pthread_mutex_init(&data->last_meal_mutex, NULL);
+	pthread_mutex_init(&data->status_mutex, NULL);
+	pthread_mutex_init(&data->reading_mutex, NULL);
 }
 
 //function with the loop to initialize all the philo struct
-void	init_philo_mutex(t_data *data)
+void	init_philo_mutex(char **av, t_data *data)
 {
 	int	i;
 
 	i = 0;
 	while (i < data->nb_philos)
 	{
-		init_philo(data, i);
+		init_philo(av, data, i);
 		i++;
 	}
 }
+
