@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 10:51:10 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 16:50:23 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	eat(t_philo *philo)
 	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp() - philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->last_meal_mutex);
-	ms_sleep(philo->data->time_to_eat);
+	ms_sleep(philo->data->time_to_eat);  //FIXME problem with 4 310 200 100
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
 			% philo->data->nb_philos]));
@@ -71,6 +71,34 @@ void	eat(t_philo *philo)
 		philo->data->nb_full_philos += 1;
 		pthread_mutex_unlock(&philo->data->count_full);
 	}
+	//before: if (((time_stamp() - philo->data->start_time) + philo->data->time_to_eat) > philo->data->time_to_die)
+	// if ((philo->data->time_to_die + philo->data->time_to_eat) < (time_stamp() - philo->data->start_time)) //FIXED this code solves the problem with 4 310 200 100 but creates prob with 5 800 200 200
+	// 	{
+	// 		ms_sleep(philo->data->time_to_die);
+	// 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
+	// 		philo->data->someone_is_dead = 1;
+	// 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
+	// 		pthread_mutex_lock(&philo->data->state_mutex);
+	// 		philo->state = DEAD;
+	// 		pthread_mutex_unlock(&philo->data->state_mutex);
+	// 		return ;
+	// 	}
+	// else
+	// {
+	// 	ms_sleep(philo->data->time_to_eat);
+	// 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
+	// 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
+	// 			% philo->data->nb_philos]));
+	// 	pthread_mutex_lock(&philo->data->full_mutex);
+	// 	philo->nb_meals_enjoyed++;
+	// 	pthread_mutex_unlock(&philo->data->full_mutex);
+	// 	if (philo->nb_meals_enjoyed == philo->nb_to_eat)
+	// 	{
+	// 		pthread_mutex_lock(&philo->data->count_full);
+	// 		philo->data->nb_full_philos += 1;
+	// 		pthread_mutex_unlock(&philo->data->count_full);
+	// 	}
+	// }
 }
 
 //putting the philo to sleep

@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 11:06:38 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 14:46:48 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 # define ERR_NB_ARGS	"Incorrect number of arguments. It has to be 5 or 6\n"
 # define ERR_ARGS		"Incorrect type of arguments. Only positive numbers\n"
 # define ERR_PHILO		"Incorrect number of philosophers at the table\n"
-# define ERR_TYPE_ARGS	"Incorrect type of args. + numbers and higher numbers\n"
+# define ERR_TYPE_ARGS	"Incorrect type of args. Positive numbers needed\n"
 # define ERR_IN_TIME	"Error: no negative time"
 # define ERR_INT		"Error: int too long"
 # define ERR_THREAD		"Error to create thread"

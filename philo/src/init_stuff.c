@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:30:49 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 11:04:34 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 16:37:09 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	init_philo(char **av, t_data *data, int i)
 	data->philo_struct[i].data = data;
 	data->philo_struct[i].last_meal = 0;
 	data->philo_struct[i].nb_meals_enjoyed = 0;
+	data->philo_struct[i].state = ALIVE;
 	pthread_mutex_init(&data->forks_mutex[i], NULL);
 }
 
@@ -50,7 +51,6 @@ void	init_singles_mutex(t_data *data)
 	pthread_mutex_init(&data->state_mutex, NULL);
 	pthread_mutex_init(&data->last_meal_mutex, NULL);
 	pthread_mutex_init(&data->status_mutex, NULL);
-	pthread_mutex_init(&data->reading_mutex, NULL);
 }
 
 //function with the loop to initialize all the philo struct

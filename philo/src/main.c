@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:05:38 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/03 09:41:05 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 14:49:08 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ int	main(int ac, char **av)
 	{
 		if (parsing(av, &data) == 1)
 			return (1);
-		execute(av, &data);
+		else
+			execute(av, &data);
 	}
 	return (0);
 }
