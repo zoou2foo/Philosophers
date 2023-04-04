@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:30:49 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 09:49:03 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 11:04:34 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,6 @@ void	setup_datastruct(t_data *data, char **str)
 }
 
 //initialize each philo struct
-// if (si j'ai pas un 6e)
-// 		data->nb_to_eat = -1
-// 	else
-// 		data->nb_to_eat = argv[6]; //ensuite tu decremente
-// 	if (str[5] != NULL)
-// 		data->nb_to_eat = ft_atoi(str[5]);
 void	init_philo(char **av, t_data *data, int i)
 {
 	if (av[5] == NULL)
@@ -71,4 +65,3 @@ void	init_philo_mutex(char **av, t_data *data)
 		i++;
 	}
 }
-

@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 09:49:40 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 11:06:38 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,6 @@
 # define ERR_INT		"Error: int too long"
 # define ERR_THREAD		"Error to create thread"
 
-/* Macro to debug
-#if debug
-	#define __INFO__    printf("in file %s at line %d in fonction %s\n", __FILE_NAME__, __LINE__, __PRETTY_FUNCTION__);
-#else
-	#define __INFO__
-#endif
-*/
 typedef enum e_state{
 	EATING,
 	SLEEPING,
@@ -51,7 +44,7 @@ typedef struct s_philo{
 	pthread_t			philo_th;
 }						t_philo;
 
-typedef struct s_data{ //parameters needed for simulation (rules)
+typedef struct s_data{
 	int						status;
 	int						nb_philos;
 	int						time_to_die;
@@ -60,13 +53,12 @@ typedef struct s_data{ //parameters needed for simulation (rules)
 	int						someone_is_dead;
 	int						nb_full_philos;
 	time_t					start_time;
-	pthread_mutex_t			full_mutex; //using it in eat()
-	pthread_mutex_t			count_full; //using it in eat()
-	pthread_mutex_t			last_meal_mutex; //using it in eat()
-	pthread_mutex_t			someone_is_dead_mutex; //using it in actions for state
-	pthread_mutex_t			state_mutex; //using it in check_up with someone_is_dead
+	pthread_mutex_t			full_mutex;
+	pthread_mutex_t			count_full;
+	pthread_mutex_t			last_meal_mutex;
+	pthread_mutex_t			someone_is_dead_mutex;
+	pthread_mutex_t			state_mutex;
 	pthread_mutex_t			print_mutex;
-	pthread_mutex_t			reading_mutex;
 	pthread_mutex_t			status_mutex;
 	pthread_mutex_t			forks_mutex[200];
 	struct s_philo			philo_struct[200];
@@ -99,7 +91,8 @@ void	init_philo_mutex(char **av, t_data *data);
 
 /*		CHECK_UP		*/
 bool	is_dead(t_philo *philo);
-void	stop_simulation(t_philo *philo);
-void	exit_simulation(t_data *data);
+void	end_when_full(t_data *data);
+void	end_when_dead(t_data *dat, int i);
+void	loop_check_state(t_data *data, int i);
 
 #endif

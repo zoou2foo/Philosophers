@@ -6,13 +6,13 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 09:48:53 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 11:05:28 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-/*			THREE FUNCTIONS			*/
+/*			FOUR FUNCTION			*/
 
 //to check if philo dies
 bool	is_dead(t_philo *philo)
@@ -21,38 +21,41 @@ bool	is_dead(t_philo *philo)
 	if (philo->state == DEAD)
 	{
 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-		philo->data->someone_is_dead = 1; //FIXME data race...
+		philo->data->someone_is_dead = 1;
 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
-		//stop_simulation(philo);
 		return (true);
 	}
 	pthread_mutex_unlock(&philo->data->state_mutex);
-	// else
-	// {
-	// 	pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-	// 	if (philo->data->someone_is_dead == 1) //FIXED data race...
-	// 	{
-	// 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
-	// 		return (true);
-	// 	}
-	// 	pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
-	// }
 	return (false);
 }
 
-//function to unlock any forks_mutex left and destroy any mutex
-//before quitting the program
-void	exit_simulation(t_data *data)
+void	end_when_full(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	pthread_mutex_unlock(&data->full_mutex);
+	pthread_mutex_lock(&data->print_mutex);
 	while (i < data->nb_philos)
 	{
-		pthread_mutex_unlock(&data->forks_mutex[i]);
+		pthread_mutex_destroy(&data->forks_mutex[i]);
 		i++;
 	}
+	pthread_mutex_unlock(&data->print_mutex);
+	pthread_mutex_destroy(&data->print_mutex);
+	pthread_mutex_destroy(&data->someone_is_dead_mutex);
+	pthread_mutex_destroy(&data->state_mutex);
+	pthread_mutex_destroy(&data->status_mutex);
+	pthread_mutex_destroy(&data->count_full);
+	pthread_mutex_destroy(&data->last_meal_mutex);
+	pthread_mutex_destroy(&data->full_mutex);
+}
+
+void	end_when_dead(t_data *data, int i)
+{
+	pthread_mutex_lock(&data->print_mutex);
+	printf("%ld - Philo %d is dead\n", time_stamp()
+		- data->start_time, data->philo_struct[i].id);
+	pthread_mutex_unlock(&data->print_mutex);
 	i = 0;
 	while (i < data->nb_philos)
 	{
@@ -61,16 +64,27 @@ void	exit_simulation(t_data *data)
 	}
 	pthread_mutex_destroy(&data->print_mutex);
 	pthread_mutex_destroy(&data->someone_is_dead_mutex);
+	pthread_mutex_destroy(&data->state_mutex);
+	pthread_mutex_destroy(&data->status_mutex);
+	pthread_mutex_destroy(&data->count_full);
 	pthread_mutex_destroy(&data->last_meal_mutex);
 	pthread_mutex_destroy(&data->full_mutex);
 }
 
-//function to start the process to stop the simulation
-void	stop_simulation(t_philo *philo)
+void	loop_check_state(t_data *data, int i)
 {
-	pthread_mutex_lock(&philo->data->print_mutex);
-	printf("%ld - Philo %d is dead\n", time_stamp()
-		- philo->data->start_time, philo->id);
-	pthread_mutex_unlock(&philo->data->print_mutex);
-	exit_simulation(philo->data);
+	while (i < data->nb_philos)
+	{
+		pthread_mutex_lock(&data->state_mutex);
+		if (data->philo_struct[i].state == DEAD)
+		{
+			pthread_mutex_unlock(&data->state_mutex);
+			pthread_mutex_lock(&data->status_mutex);
+			data->status = 0;
+			pthread_mutex_unlock(&data->status_mutex);
+			pthread_mutex_lock(&data->print_mutex);
+		}
+		pthread_mutex_unlock(&data->state_mutex);
+		i++;
+	}
 }

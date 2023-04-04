@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 10:00:01 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 11:03:56 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	*routine(void *arg)
 	if (philo->id % 2 == 0)
 		usleep(15000);
 	pthread_mutex_lock(&philo->data->status_mutex);
-	while (philo->data->status == 1) //status on
+	while (philo->data->status == 1)
 	{
 		pthread_mutex_unlock(&philo->data->status_mutex);
 		take_first_fork(philo);
@@ -43,82 +43,35 @@ void	*routine(void *arg)
 		eat(philo);
 		time_to_sleep(philo);
 		print_message(philo, "is thinking");
-
 	}
 	pthread_mutex_unlock(&philo->data->status_mutex);
 	return (NULL);
 }
 
 //function to join back threads when they are done their job(thread function)
+//need to relock before going back to the condition in the while
 void	wait_for_threads(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	pthread_mutex_lock(&data->someone_is_dead_mutex); //does not work to fix datarace
+	pthread_mutex_lock(&data->someone_is_dead_mutex);
 	pthread_mutex_lock(&data->count_full);
-	while (data->someone_is_dead != 1 && (data->nb_full_philos != data->nb_philos))
+	while (data->someone_is_dead != 1 && (data->nb_full_philos
+			!= data->nb_philos))
 	{
-		pthread_mutex_unlock(&data->someone_is_dead_mutex); //does not work to fix datarace
+		pthread_mutex_unlock(&data->someone_is_dead_mutex);
 		pthread_mutex_unlock(&data->count_full);
-		while(i < data->nb_philos)
-		{
-			pthread_mutex_lock(&data->state_mutex);
-			if (data->philo_struct[i].state == DEAD)
-			{
-				pthread_mutex_unlock(&data->state_mutex);
-				pthread_mutex_lock(&data->status_mutex);
-				data->status = 0;
-				pthread_mutex_unlock(&data->status_mutex);
-				pthread_mutex_lock(&data->print_mutex);
-			}
-			pthread_mutex_unlock(&data->state_mutex);
-			i++;
-		}
-		usleep(1000); //might need to adjust
+		loop_check_state(data, i);
+		usleep(1000);
 		i = 0;
-		//pthread_mutex_unlock(&data->dead_body);
 		pthread_mutex_lock(&data->count_full);
-		pthread_mutex_lock(&data->someone_is_dead_mutex); //need to relock before going back to the condition in the while
+		pthread_mutex_lock(&data->someone_is_dead_mutex);
 	}
 	if (data->nb_full_philos == data->nb_philos && data->someone_is_dead != 1)
-	{
-		pthread_mutex_lock(&data->print_mutex);
-		i = 0;
-		while (i < data->nb_philos)
-		{
-			pthread_mutex_destroy(&data->forks_mutex[i]);
-			i++;
-		}
-		pthread_mutex_unlock(&data->print_mutex);
-		pthread_mutex_destroy(&data->print_mutex);
-		pthread_mutex_destroy(&data->someone_is_dead_mutex);
-		pthread_mutex_destroy(&data->state_mutex);
-		pthread_mutex_destroy(&data->status_mutex);
-		pthread_mutex_destroy(&data->count_full);
-		pthread_mutex_destroy(&data->last_meal_mutex);
-		pthread_mutex_destroy(&data->full_mutex);
-	}
+		end_when_full(data);
 	else if (data->someone_is_dead == 1)
-	{
-		pthread_mutex_lock(&data->print_mutex);
-		printf("%ld - Philo %d is dead\n", time_stamp()
-			- data->start_time, data->philo_struct[i].id);
-		pthread_mutex_unlock(&data->print_mutex);
-		i = 0;
-		while (i < data->nb_philos)
-		{
-			pthread_mutex_destroy(&data->forks_mutex[i]);
-			i++;
-		}
-		pthread_mutex_destroy(&data->print_mutex);
-		pthread_mutex_destroy(&data->someone_is_dead_mutex);
-		pthread_mutex_destroy(&data->state_mutex);
-		pthread_mutex_destroy(&data->status_mutex);
-		pthread_mutex_destroy(&data->count_full);
-		pthread_mutex_destroy(&data->last_meal_mutex);
-		pthread_mutex_destroy(&data->full_mutex);
-	}
+		end_when_dead(data, i);
 }
 
 //starting the simulation
