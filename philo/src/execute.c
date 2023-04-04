@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 09:38:02 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/04 09:46:29 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,25 @@ void	wait_for_threads(t_data *data)
 		pthread_mutex_lock(&data->count_full);
 		pthread_mutex_lock(&data->someone_is_dead_mutex); //need to relock before going back to the condition in the while
 	}
-	if (data->someone_is_dead == 1)
+	if (data->nb_full_philos == data->nb_philos && data->someone_is_dead != 1)
+	{
+		pthread_mutex_lock(&data->print_mutex);
+		i = 0;
+		while (i < data->nb_philos)
+		{
+			pthread_mutex_destroy(&data->forks_mutex[i]);
+			i++;
+		}
+		pthread_mutex_unlock(&data->print_mutex);
+		pthread_mutex_destroy(&data->print_mutex);
+		pthread_mutex_destroy(&data->someone_is_dead_mutex);
+		pthread_mutex_destroy(&data->state_mutex);
+		pthread_mutex_destroy(&data->status_mutex);
+		pthread_mutex_destroy(&data->count_full);
+		pthread_mutex_destroy(&data->last_meal_mutex);
+		pthread_mutex_destroy(&data->full_mutex);
+	}
+	else if (data->someone_is_dead == 1)
 	{
 		pthread_mutex_lock(&data->print_mutex);
 		printf("%ld - Philo %d is dead\n", time_stamp()
@@ -97,23 +115,7 @@ void	wait_for_threads(t_data *data)
 		pthread_mutex_destroy(&data->someone_is_dead_mutex);
 		pthread_mutex_destroy(&data->state_mutex);
 		pthread_mutex_destroy(&data->status_mutex);
-		pthread_mutex_destroy(&data->last_meal_mutex);
-		pthread_mutex_destroy(&data->full_mutex);
-	}
-	else if (data->nb_full_philos == data->nb_philos && data->someone_is_dead != 1)
-	{
-		pthread_mutex_lock(&data->print_mutex);
-		i = 0;
-		while (i < data->nb_philos)
-		{
-			pthread_mutex_destroy(&data->forks_mutex[i]);
-			i++;
-		}
-		pthread_mutex_unlock(&data->print_mutex);
-		pthread_mutex_destroy(&data->print_mutex);
-		pthread_mutex_destroy(&data->someone_is_dead_mutex);
-		pthread_mutex_destroy(&data->state_mutex);
-		pthread_mutex_destroy(&data->status_mutex);
+		pthread_mutex_destroy(&data->count_full);
 		pthread_mutex_destroy(&data->last_meal_mutex);
 		pthread_mutex_destroy(&data->full_mutex);
 	}
@@ -141,25 +143,3 @@ void	execute(char **av, t_data *data)
 	}
 	wait_for_threads(data);
 }
-
-
-// while (i < data->nb_philos)
-	// {
-	// 	if (pthread_join(data->philo_struct[i].philo_th, NULL) != 0)
-	// 		return ;
-	// 	pthread_mutex_destroy(&data->forks_mutex[i]);
-	// 	i++;
-	// }
-
-// void routine()
-// pthread_mutex_lock(&philo->data->full_mutex);
-// 		if (is_dead(philo) == false
-// 			&& (philo->data->nb_full_philos != philo->data->nb_philos))
-// 		{
-// 			pthread_mutex_unlock(&philo->data->full_mutex);
-// 		}
-// 		else
-// 		{
-// 			pthread_mutex_unlock(&philo->data->full_mutex);
-// 			break ;
-// 		}
