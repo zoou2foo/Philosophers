@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 12:08:51 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/05 15:39:34 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 //to check if philo dies
 bool	is_dead(t_philo *philo)
 {
-	time_or_no_time(philo);
+	//time_or_no_time(philo);
 	pthread_mutex_lock(&philo->data->state_mutex); //mutex superflu
 	if (philo->state == DEAD)
 	{
@@ -77,13 +77,14 @@ void	loop_check_state(t_data *data, int i)
 	while (i < data->nb_philos)
 	{
 		pthread_mutex_lock(&data->state_mutex);
-		if (data->philo_struct[i].state == DEAD)
+		//if (data->philo_struct[i].state == DEAD)
+		if (time_or_no_time(&data->philo_struct[i]) == false)
 		{
 			pthread_mutex_unlock(&data->state_mutex);
 			pthread_mutex_lock(&data->status_mutex);
 			data->status = 0;
 			pthread_mutex_unlock(&data->status_mutex);
-			pthread_mutex_lock(&data->print_mutex);
+			//pthread_mutex_lock(&data->print_mutex);
 			return ;
 		}
 		pthread_mutex_unlock(&data->state_mutex);

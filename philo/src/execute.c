@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 12:08:04 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/05 15:50:20 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,9 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = philo->data->start_time;
+	pthread_mutex_unlock(&philo->data->last_meal_mutex);
 
 	if (philo->id % 2 == 0)
 		usleep(50);
@@ -40,12 +42,12 @@ void	*routine(void *arg)
 	while (philo->data->status == 1)
 	{
 		pthread_mutex_unlock(&philo->data->status_mutex);
-		if (time_or_no_time(philo))
-		{
-			take_first_fork(philo);
-			take_second_fork(philo);
-			eat(philo);
-		}
+		// if (time_or_no_time(philo))
+		// {
+		take_first_fork(philo);
+		take_second_fork(philo);
+		eat(philo);
+		// }
 		time_to_sleep(philo);
 		print_message(philo, "is thinking");
 	}
@@ -69,7 +71,7 @@ void	wait_for_threads(t_data *data)
 		pthread_mutex_unlock(&data->count_full);
 		loop_check_state(data, i);
 		usleep(50);
-		i = 0;
+		//i = 0;
 		pthread_mutex_lock(&data->count_full);
 		pthread_mutex_lock(&data->someone_is_dead_mutex);
 	}

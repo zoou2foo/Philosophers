@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 12:09:03 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/05 15:38:29 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,18 @@
 
 bool	time_or_no_time(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->data->last_meal_mutex);
+	//printf("philo id: %d - time_stamp: %ld et last_meal: %ld\n", philo->id, time_stamp(), philo->last_meal);
+	//usleep(50);
 	int t_last_meal = time_stamp() - philo->last_meal;
+	pthread_mutex_unlock(&philo->data->last_meal_mutex);
 	// if (philo->last_meal > 0 && (((time_stamp() - philo->data->start_time) + philo->last_meal) > ((time_stamp() - philo->data->start_time) + philo->data->time_to_die)))
 
 	// printf("last_meal = %d\n", t_last_meal);
 
-	if(t_last_meal >= philo->data->time_to_die)
+	if(t_last_meal > philo->data->time_to_die)
 	{
+		//printf("pew pew madafakas: %d last meal\n", t_last_meal);
 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
 		//printf("switch state de philo: %d au temps: %ld\n", philo->id, (time_stamp() - philo->data->start_time));
 		philo->data->someone_is_dead = 1;
@@ -80,10 +85,10 @@ void	take_second_fork(t_philo *philo)
 //keep track of last_meal and counts the number of time that they have eaten
 void	eat(t_philo *philo)
 {
-	// pthread_mutex_lock(&philo->data->last_meal_mutex);
 	// philo->last_meal = time_stamp() - philo->data->start_time;
-	// pthread_mutex_unlock(&philo->data->last_meal_mutex);
+	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp();
+	pthread_mutex_unlock(&philo->data->last_meal_mutex);
 	ms_sleep(philo->data->time_to_eat); 
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
