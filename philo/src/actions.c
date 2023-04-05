@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 09:18:31 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/05 09:32:08 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,15 @@
 
 bool	time_or_no_time(t_philo *philo)
 {
-	if (philo->last_meal != 0 && (((time_stamp() - philo->data->start_time) + philo->last_meal)
-		> ((time_stamp() - philo->data->start_time) + philo->data->time_to_die)))
-		return (true);
-	else
+	if (philo->last_meal > 0 && (((time_stamp() - philo->data->start_time) + philo->last_meal) > ((time_stamp() - philo->data->start_time) + philo->data->time_to_die)))
 	{
 		philo->state = DEAD;
 		return (false);
+	}
+
+	else
+	{
+		return (true);
 	}
 }
 
