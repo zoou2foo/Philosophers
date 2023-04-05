@@ -6,18 +6,19 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/04 11:05:28 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/05 09:11:49 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-/*			FOUR FUNCTION			*/
+/*			FOUR FUNCTIONS			*/
 
 //to check if philo dies
 bool	is_dead(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->data->state_mutex);
+	time_or_no_time(philo);
+	pthread_mutex_lock(&philo->data->state_mutex); //mutex superflu
 	if (philo->state == DEAD)
 	{
 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
@@ -25,7 +26,7 @@ bool	is_dead(t_philo *philo)
 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
 		return (true);
 	}
-	pthread_mutex_unlock(&philo->data->state_mutex);
+	pthread_mutex_unlock(&philo->data->state_mutex); //mutex superflu
 	return (false);
 }
 
