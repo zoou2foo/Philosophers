@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 08:58:57 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/05 11:45:16 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,20 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	philo->last_meal = philo->data->start_time;
+
 	if (philo->id % 2 == 0)
-		usleep(15000);
+		usleep(50);
 	pthread_mutex_lock(&philo->data->status_mutex);
 	while (philo->data->status == 1)
 	{
 		pthread_mutex_unlock(&philo->data->status_mutex);
-		take_first_fork(philo);
-		take_second_fork(philo);
-		eat(philo);
+		if (time_or_no_time(philo))
+		{
+			take_first_fork(philo);
+			take_second_fork(philo);
+			eat(philo);
+		}
 		time_to_sleep(philo);
 		print_message(philo, "is thinking");
 	}
@@ -63,7 +68,7 @@ void	wait_for_threads(t_data *data)
 		pthread_mutex_unlock(&data->someone_is_dead_mutex);
 		pthread_mutex_unlock(&data->count_full);
 		loop_check_state(data, i);
-		usleep(1000);
+		usleep(50);
 		i = 0;
 		pthread_mutex_lock(&data->count_full);
 		pthread_mutex_lock(&data->someone_is_dead_mutex);

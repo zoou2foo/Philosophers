@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 09:32:08 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/05 11:43:00 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,19 @@
 
 bool	time_or_no_time(t_philo *philo)
 {
-	if (philo->last_meal > 0 && (((time_stamp() - philo->data->start_time) + philo->last_meal) > ((time_stamp() - philo->data->start_time) + philo->data->time_to_die)))
+	int t_last_meal = time_stamp() - philo->last_meal;
+	// if (philo->last_meal > 0 && (((time_stamp() - philo->data->start_time) + philo->last_meal) > ((time_stamp() - philo->data->start_time) + philo->data->time_to_die)))
+
+	// printf("last_meal = %d\n", t_last_meal);
+
+	if(t_last_meal >= philo->data->time_to_die)
 	{
+		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
+		philo->data->someone_is_dead = 1;
 		philo->state = DEAD;
+		// printf("%ld - Philo %d is dead\n", time_stamp()\
+		// - philo->data->start_time, philo->id);
+		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
 		return (false);
 	}
 
@@ -32,11 +42,11 @@ bool	time_or_no_time(t_philo *philo)
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
-	{
-		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
-		print_message(philo, "has taken a fork");
-	}
+	// if (is_dead(philo) == false)
+	// {
+	pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
+	print_message(philo, "has taken a fork");
+	// }
 }
 
 //take second fork
@@ -45,40 +55,41 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	// if (is_dead(philo) == false)
+	// {
+	if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 	{
-		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
-		{
-			ms_sleep(philo->data->time_to_die);
-			pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-			philo->data->someone_is_dead = 1;
-			pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
-			pthread_mutex_lock(&philo->data->state_mutex);
-			philo->state = DEAD;
-			pthread_mutex_unlock(&philo->data->state_mutex);
-			return ;
-		}
-		pthread_mutex_lock(&philo->data->forks_mutex[(philo->id)
-			% philo->data->nb_philos]);
-		print_message(philo, "has taken a 2nd fork");
-		print_message(philo, "is eating");
+		ms_sleep(philo->data->time_to_die);
+		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
+		philo->data->someone_is_dead = 1;
+		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
+		pthread_mutex_lock(&philo->data->state_mutex);
+		philo->state = DEAD;
+		pthread_mutex_unlock(&philo->data->state_mutex);
+		return ;
 	}
+	pthread_mutex_lock(&philo->data->forks_mutex[(philo->id)
+		% philo->data->nb_philos]);
+	print_message(philo, "has taken a 2nd fork");
+	print_message(philo, "is eating");
+	// }
 }
 
 //then time to eat takes care of setting up the time to eat
 //keep track of last_meal and counts the number of time that they have eaten
 void	eat(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->data->last_meal_mutex);
-	philo->last_meal = time_stamp() - philo->data->start_time;
-	pthread_mutex_unlock(&philo->data->last_meal_mutex);
-	ms_sleep(philo->data->time_to_eat);  //FIXME problem with 4 310 200 100
+	// pthread_mutex_lock(&philo->data->last_meal_mutex);
+	// philo->last_meal = time_stamp() - philo->data->start_time;
+	// pthread_mutex_unlock(&philo->data->last_meal_mutex);
+	philo->last_meal = time_stamp();
+	ms_sleep(philo->data->time_to_eat); 
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
 			% philo->data->nb_philos]));
-	pthread_mutex_lock(&philo->data->full_mutex);
+	// pthread_mutex_lock(&philo->data->full_mutex);
 	philo->nb_meals_enjoyed++;
-	pthread_mutex_unlock(&philo->data->full_mutex);
+	// pthread_mutex_unlock(&philo->data->full_mutex);
 	if (philo->nb_meals_enjoyed == philo->nb_to_eat)
 	{
 		pthread_mutex_lock(&philo->data->count_full);
