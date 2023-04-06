@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/06 08:18:04 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/06 12:21:03 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void	*routine(void *arg)
 
 	philo = (t_philo *)arg;
 	philo->last_meal = philo->data->start_time;
-
 	if (philo->id % 2 == 0)
 		usleep(50);
 	pthread_mutex_lock(&philo->data->status_mutex);
