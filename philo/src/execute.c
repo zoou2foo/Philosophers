@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 12:08:04 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/06 08:18:04 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,5 +99,16 @@ void	execute(char **av, t_data *data)
 		pthread_detach(data->philo_struct[i].philo_th);
 		i++;
 	}
-	wait_for_threads(data);
+	wait_for_threads(data); //COMMENT rename to something more specific
 }
+
+
+/*
+pthread_detach():
+The pthread_detach() function marks the thread identified by thread as detached.
+When a detached thread terminates, its resources are automatically released back
+to the system without the need for another thread to join with the terminated
+thread. Attempting to detach an already detached thread results in unspecified
+behavior.
+
+*/
