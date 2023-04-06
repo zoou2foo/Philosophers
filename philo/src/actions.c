@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 12:09:03 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/06 08:03:39 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ bool	time_or_no_time(t_philo *philo)
 
 	// printf("last_meal = %d\n", t_last_meal);
 
-	if(t_last_meal >= philo->data->time_to_die)
+	if(t_last_meal > philo->data->time_to_die)
 	{
 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
 		//printf("switch state de philo: %d au temps: %ld\n", philo->id, (time_stamp() - philo->data->start_time));
