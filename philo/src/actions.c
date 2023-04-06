@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 15:38:29 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/06 07:55:57 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ bool	time_or_no_time(t_philo *philo)
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	// if (is_dead(philo) == false)
+	// if (is_dead(philo) == false) 
 	// {
 	pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
 	print_message(philo, "has taken a fork");
@@ -61,7 +61,7 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	// if (is_dead(philo) == false)
+	// if (is_dead(philo) == false) 
 	// {
 	if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 	{
