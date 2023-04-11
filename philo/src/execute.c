@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 09:57:02 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 12:06:23 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,10 @@ void	execute(char **av, t_data *data)
 		i++;
 	}
 	check_health_state(&(data->philo_struct[0]));
+	//if (check_health_state(&(data->philo_struct[0])))
+	// 	destroy_everything(data);
+	// else
+	// 	wait_for_threads(data);
 	wait_for_threads(data); //COMMENT rename to something more specific
 }
 

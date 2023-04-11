@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 11:29:31 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 11:57:11 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,25 @@ void	end_when_dead(t_data *data, int i)
 	// printf("%ld - Philo %d is dead\n", time_stamp() //to only have one print
 	// 	- data->start_time, data->philo_struct[i].id);
 	// pthread_mutex_unlock(&data->print_mutex);
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		pthread_mutex_destroy(&data->forks_mutex[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&data->print_mutex);
+	pthread_mutex_destroy(&data->someone_is_dead_mutex);
+	pthread_mutex_destroy(&data->state_mutex);
+	pthread_mutex_destroy(&data->status_mutex);
+	pthread_mutex_destroy(&data->count_full);
+	pthread_mutex_destroy(&data->last_meal_mutex);
+	pthread_mutex_destroy(&data->full_mutex);
+}
+
+void	destroy_everything(t_data *data)
+{
+	int	i;
+
 	i = 0;
 	while (i < data->nb_philos)
 	{

@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 09:58:37 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 11:57:40 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,5 +96,6 @@ void	end_when_full(t_data *data);
 void	end_when_dead(t_data *dat, int i);
 void	loop_check_state(t_data *data, int i);
 int		dead_or_not(t_philo *philo, time_t current_time);
+void	destroy_everything(t_data *data);
 
 #endif
