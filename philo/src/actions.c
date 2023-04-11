@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 16:03:40 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 16:58:45 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) == false && (time_stamp() - philo->data->start_time) < (time_stamp() - philo->data->start_time) + philo->data->time_to_eat)
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
 		print_message(philo, "has taken a fork");
@@ -57,7 +57,7 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) == false && ((time_stamp() - philo->data->start_time) + philo->data->time_to_eat) && (philo->last_meal < philo->data->time_to_die))
 	{
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
@@ -74,6 +74,14 @@ void	take_second_fork(t_philo *philo)
 			% philo->data->nb_philos]);
 		print_message(philo, "has taken a 2nd fork");
 		print_message(philo, "is eating");
+	}
+	else
+	{
+		ms_sleep(philo->data->time_to_die - (time_stamp() - philo->data->start_time));
+		pthread_mutex_lock(&philo->data->state_mutex);
+		philo->state = DEAD;
+		pthread_mutex_unlock(&philo->data->state_mutex);
+		return ;
 	}
 }
 
@@ -138,6 +146,13 @@ void	time_to_sleep(t_philo *philo)
 			> philo->data->time_to_die)
 		{
 			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
+			pthread_mutex_lock(&philo->data->state_mutex);
+			philo->state = DEAD;
+			pthread_mutex_unlock(&philo->data->state_mutex);
+		}
+		else if (philo->data->time_to_die < philo->data->time_to_sleep)
+		{
+			ms_sleep(philo->data->time_to_die);
 			pthread_mutex_lock(&philo->data->state_mutex);
 			philo->state = DEAD;
 			pthread_mutex_unlock(&philo->data->state_mutex);

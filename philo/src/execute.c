@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 16:43:04 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 17:00:32 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,26 @@ void	*routine(void *arg)
 	pthread_mutex_lock(&philo->data->status_mutex);
 	while (philo->data->status == 1)
 	{
-		pthread_mutex_unlock(&philo->data->status_mutex);
-		// if (time_or_no_time(philo))
-		// {
-		take_first_fork(philo);
-		take_second_fork(philo);
-		eat(philo);
-		// }
-		time_to_sleep(philo);
-		print_message(philo, "is thinking");
+		if (is_dead(philo) == false)
+		{
+			pthread_mutex_unlock(&philo->data->status_mutex);
+			// if (time_or_no_time(philo))
+			// {
+			take_first_fork(philo);
+			take_second_fork(philo);
+			eat(philo);
+			// }
+			time_to_sleep(philo);
+			if (philo->data->time_to_eat > philo->data->time_to_sleep)
+			{
+				pthread_mutex_lock(&philo->data->state_mutex);
+				philo->state = DEAD;
+				pthread_mutex_unlock(&philo->data->state_mutex);
+			}
+			else
+				print_message(philo, "is thinking");
+			
+		}
 	}
 	pthread_mutex_unlock(&philo->data->status_mutex);
 	return (NULL);
