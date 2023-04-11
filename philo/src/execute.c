@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 08:39:39 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 09:12:42 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,21 +61,44 @@ void	wait_for_threads(t_data *data)
 	i = 0;
 	pthread_mutex_lock(&data->someone_is_dead_mutex);
 	pthread_mutex_lock(&data->count_full);
-	while (data->someone_is_dead != 1 && (data->nb_full_philos
-			!= data->nb_philos))
-	{
-		pthread_mutex_unlock(&data->someone_is_dead_mutex);
-		pthread_mutex_unlock(&data->count_full);
-		loop_check_state(data, i);
-		usleep(50);
-		i = 0;
-		pthread_mutex_lock(&data->count_full);
-		pthread_mutex_lock(&data->someone_is_dead_mutex);
-	}
+	// while (data->someone_is_dead != 1 && (data->nb_full_philos
+	// 		!= data->nb_philos))
+	// {
+	// 	pthread_mutex_unlock(&data->someone_is_dead_mutex);
+	// 	pthread_mutex_unlock(&data->count_full);
+	// 	// loop_check_state(data, i);
+	// 	// usleep(50);
+	// 	i = 0;
+	// 	pthread_mutex_lock(&data->count_full);
+	// 	pthread_mutex_lock(&data->someone_is_dead_mutex);
+	// }
 	if (data->nb_full_philos == data->nb_philos && data->someone_is_dead != 1)
 		end_when_full(data);
 	else if (data->someone_is_dead == 1)
 		end_when_dead(data, i);
+}
+
+void	check_health_state(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		pthread_mutex_lock(&data->state_mutex);
+		if (data->philo_struct[i].state == DEAD)
+		{
+			pthread_mutex_unlock(&data->state_mutex);
+			pthread_mutex_lock(&data->status_mutex);
+			data->status = 0;
+			pthread_mutex_unlock(&data->status_mutex);
+			pthread_mutex_lock(&data->print_mutex);
+			return ;
+		}
+		pthread_mutex_unlock(&data->state_mutex);
+		usleep(50);
+		i++;
+	}
 }
 
 //starting the simulation
@@ -98,6 +121,7 @@ void	execute(char **av, t_data *data)
 		pthread_detach(data->philo_struct[i].philo_th);
 		i++;
 	}
+	check_health_state(data);
 	wait_for_threads(data); //COMMENT rename to something more specific
 }
 
