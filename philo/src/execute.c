@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/06 12:21:03 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 08:39:39 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,19 +32,19 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	philo->last_meal = philo->data->start_time;
+	//philo->last_meal = philo->data->start_time; //what I tried before long weekend
 	if (philo->id % 2 == 0)
 		usleep(50);
 	pthread_mutex_lock(&philo->data->status_mutex);
 	while (philo->data->status == 1)
 	{
 		pthread_mutex_unlock(&philo->data->status_mutex);
-		if (time_or_no_time(philo))
-		{
-			take_first_fork(philo);
-			take_second_fork(philo);
-			eat(philo);
-		}
+		// if (time_or_no_time(philo))
+		// {
+		take_first_fork(philo);
+		take_second_fork(philo);
+		eat(philo);
+		// }
 		time_to_sleep(philo);
 		print_message(philo, "is thinking");
 	}
