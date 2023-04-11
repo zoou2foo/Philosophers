@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 08:39:39 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 12:37:05 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ void	execute(char **av, t_data *data)
 	wait_for_threads(data); //COMMENT rename to something more specific
 }
 
+//after lunch trying new strategy
 
 /*
 pthread_detach():
