@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 12:10:49 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 12:31:18 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ void	*routine(void *arg)
 		eat(philo);
 		// }
 		time_to_sleep(philo);
-		print_message(philo, "is thinking");
+		thinking(philo);
+		//print_message(philo, "is thinking");
 	}
 	pthread_mutex_unlock(&philo->data->status_mutex);
 	return (NULL);

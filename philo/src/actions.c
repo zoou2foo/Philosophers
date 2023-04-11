@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 09:57:54 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 12:31:05 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,15 @@ void	eat(t_philo *philo)
 	philo->last_meal = time_stamp() - philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp();
-	ms_sleep(philo->data->time_to_eat);
+	if (philo->data->time_to_die < philo->data->time_to_eat)
+	{
+		ms_sleep(philo->data->time_to_eat - philo->data->time_to_die);
+		pthread_mutex_lock(&philo->data->state_mutex);
+		philo->state = DEAD;
+		pthread_mutex_unlock(&philo->data->state_mutex);
+	}
+	else
+		ms_sleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
 			% philo->data->nb_philos]));
@@ -143,7 +151,27 @@ void	time_to_sleep(t_philo *philo)
 			philo->state = DEAD;
 			pthread_mutex_unlock(&philo->data->state_mutex);
 		}
+		else if (philo->data->time_to_sleep > philo->data->time_to_die)
+		{
+			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
+			pthread_mutex_lock(&philo->data->state_mutex);
+			philo->state = DEAD;
+			pthread_mutex_unlock(&philo->data->state_mutex);
+		}
 		else
 			ms_sleep(philo->data->time_to_sleep);
 	}
+}
+
+void	thinking(t_philo *philo)
+{
+	if (philo->data->time_to_eat > philo->data->time_to_sleep)
+	{
+		print_message(philo, "is thinking");
+		pthread_mutex_lock(&philo->data->state_mutex);
+		philo->state = DEAD;
+		pthread_mutex_unlock(&philo->data->state_mutex);
+	}
+	else
+		print_message(philo, "is thinking");
 }

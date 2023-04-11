@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 11:57:40 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 12:31:38 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ void	take_first_fork(t_philo *philo);
 void	take_second_fork(t_philo *philo);
 void	eat(t_philo *philo);
 void	time_to_sleep(t_philo *philo);
+void	thinking(t_philo *philo);
 
 /*		INIT_STUFF		*/
 void	init_philo(char **av, t_data *data, int i);
