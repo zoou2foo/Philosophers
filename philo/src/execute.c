@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 12:06:23 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 12:10:49 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,22 +79,18 @@ void	wait_for_threads(t_data *data)
 		end_when_dead(data, i);
 }
 
-void	*check_health_state(void *arg)
+void	*check_health_state(t_data *data)
 {
 	int		i;
-	t_data	*data;
-	t_philo	*philo;
 	time_t	current_time;
 
-	philo = (t_philo *)arg;
-	data = philo->data;
 	while (1)
 	{
 		i = 0;
 		current_time = time_stamp() - data->start_time;
 		while (i < data->nb_philos)
 		{
-			if (dead_or_not(&(philo)[i], current_time))
+			if (dead_or_not(&data->philo_struct[i], current_time))
 				return (NULL);
 			i++;
 		}
@@ -123,7 +119,7 @@ void	execute(char **av, t_data *data)
 		pthread_detach(data->philo_struct[i].philo_th);
 		i++;
 	}
-	check_health_state(&(data->philo_struct[0]));
+	check_health_state(data);
 	//if (check_health_state(&(data->philo_struct[0])))
 	// 	destroy_everything(data);
 	// else
