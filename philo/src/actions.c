@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 15:22:16 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 16:03:40 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 /*		FOUR FUNCTIONS			*/
 
 //not sure that it really works
-//FIXME add checks from my notebook discussed with Justine... maybe not...
 // // bool	time_or_no_time(t_philo *philo)
 // // {
 // // 	int t_last_meal = time_stamp() - philo->last_meal;
@@ -135,7 +134,7 @@ void	time_to_sleep(t_philo *philo)
 	if (is_dead(philo) == false)
 	{
 		print_message(philo, "is sleeping");
-		if ((philo->data->time_to_eat + philo->data->time_to_sleep)
+		if ((philo->data->time_to_eat + philo->data->time_to_sleep) //meurt en se réveillant/switchant à thinking
 			> philo->data->time_to_die)
 		{
 			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
