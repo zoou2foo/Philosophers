@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 08:36:46 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 13:54:08 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,8 +84,7 @@ void	eat(t_philo *philo)
 	pthread_mutex_lock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp() - philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->last_meal_mutex);
-	philo->last_meal = time_stamp();
-	ms_sleep(philo->data->time_to_eat); 
+	ms_sleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
 			% philo->data->nb_philos]));
@@ -99,7 +98,7 @@ void	eat(t_philo *philo)
 		pthread_mutex_unlock(&philo->data->count_full);
 	}
 	//before: if (((time_stamp() - philo->data->start_time) + philo->data->time_to_eat) > philo->data->time_to_die)
-	// if ((philo->data->time_to_die + philo->data->time_to_eat) < (time_stamp() - philo->data->start_time)) //FIXED this code solves the problem with 4 310 200 100 but creates prob with 5 800 200 200
+	// if ((philo->data->time_to_die + philo->data->time_to_eat) < (time_stamp() - philo->data->start_time)) // this code solves the problem with 4 310 200 100 but creates prob with 5 800 200 200
 	// 	{
 	// 		ms_sleep(philo->data->time_to_die);
 	// 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
