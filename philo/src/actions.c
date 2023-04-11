@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 13:54:08 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 15:22:16 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,11 @@
 /*		FOUR FUNCTIONS			*/
 
 //not sure that it really works
-// bool	time_or_no_time(t_philo *philo)
-// {
-// 	int t_last_meal = time_stamp() - philo->last_meal;
-// 	// if (philo->last_meal > 0 && (((time_stamp() - philo->data->start_time) + philo->last_meal) > ((time_stamp() - philo->data->start_time) + philo->data->time_to_die)))
+//FIXME add checks from my notebook discussed with Justine... maybe not...
+// // bool	time_or_no_time(t_philo *philo)
+// // {
+// // 	int t_last_meal = time_stamp() - philo->last_meal;
+// // 	// if (philo->last_meal > 0 && (((time_stamp() - philo->data->start_time) + philo->last_meal) > ((time_stamp() - philo->data->start_time) + philo->data->time_to_die)))
 
 // 	// printf("last_meal = %d\n", t_last_meal);
 
