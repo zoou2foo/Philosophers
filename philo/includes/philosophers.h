@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 12:08:08 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 09:58:37 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,10 @@ void	init_singles_mutex(t_data *data);
 void	init_philo_mutex(char **av, t_data *data);
 
 /*		CHECK_UP		*/
-bool	is_dead(t_philo *philo);
+int		is_dead(t_philo *philo);
 void	end_when_full(t_data *data);
 void	end_when_dead(t_data *dat, int i);
 void	loop_check_state(t_data *data, int i);
+int		dead_or_not(t_philo *philo, time_t current_time);
 
 #endif

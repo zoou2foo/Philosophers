@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 08:36:46 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 09:57:54 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (!is_dead(philo))
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
 		print_message(philo, "has taken a fork");
@@ -57,7 +57,7 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (!is_dead(philo))
 	{
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
@@ -85,7 +85,7 @@ void	eat(t_philo *philo)
 	philo->last_meal = time_stamp() - philo->data->start_time;
 	pthread_mutex_unlock(&philo->data->last_meal_mutex);
 	philo->last_meal = time_stamp();
-	ms_sleep(philo->data->time_to_eat); 
+	ms_sleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
 			% philo->data->nb_philos]));

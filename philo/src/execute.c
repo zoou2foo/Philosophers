@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 09:12:42 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/11 09:57:02 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,10 @@ void	*routine(void *arg)
 	if (philo->id % 2 == 0)
 		usleep(50);
 	pthread_mutex_lock(&philo->data->status_mutex);
-	while (philo->data->status == 1)
+	//while (philo->data->status == 1)
+	while (!is_dead(philo))
 	{
-		pthread_mutex_unlock(&philo->data->status_mutex);
+		//pthread_mutex_unlock(&philo->data->status_mutex);
 		// if (time_or_no_time(philo))
 		// {
 		take_first_fork(philo);
@@ -78,27 +79,28 @@ void	wait_for_threads(t_data *data)
 		end_when_dead(data, i);
 }
 
-void	check_health_state(t_data *data)
+void	*check_health_state(void *arg)
 {
-	int	i;
+	int		i;
+	t_data	*data;
+	t_philo	*philo;
+	time_t	current_time;
 
-	i = 0;
-	while (i < data->nb_philos)
+	philo = (t_philo *)arg;
+	data = philo->data;
+	while (1)
 	{
-		pthread_mutex_lock(&data->state_mutex);
-		if (data->philo_struct[i].state == DEAD)
+		i = 0;
+		current_time = time_stamp() - data->start_time;
+		while (i < data->nb_philos)
 		{
-			pthread_mutex_unlock(&data->state_mutex);
-			pthread_mutex_lock(&data->status_mutex);
-			data->status = 0;
-			pthread_mutex_unlock(&data->status_mutex);
-			pthread_mutex_lock(&data->print_mutex);
-			return ;
+			if (dead_or_not(&(philo)[i], current_time))
+				return (NULL);
+			i++;
 		}
-		pthread_mutex_unlock(&data->state_mutex);
-		usleep(50);
-		i++;
+		ms_sleep(1);
 	}
+	return (NULL);
 }
 
 //starting the simulation
@@ -121,7 +123,7 @@ void	execute(char **av, t_data *data)
 		pthread_detach(data->philo_struct[i].philo_th);
 		i++;
 	}
-	check_health_state(data);
+	check_health_state(&(data->philo_struct[0]));
 	wait_for_threads(data); //COMMENT rename to something more specific
 }
 
