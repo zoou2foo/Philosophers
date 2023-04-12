@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 16:01:34 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 16:29:45 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	*routine(void *arg)
 	if (philo->id % 2 == 0)
 		usleep(15000);
 	pthread_mutex_lock(&philo->data->status_mutex);
-	while (philo->data->status == 1) //FIXME datarace
+	while (philo->data->status == 1) //FIXME datarace; also datarace when only one philo
 	{
 		pthread_mutex_unlock(&philo->data->status_mutex);
 		if (is_dead(philo) == false)
@@ -55,13 +55,13 @@ void	*routine(void *arg)
 void	lock_n_change(t_data *data, int i)
 {
 	pthread_mutex_lock(&data->state_mutex);
-	data->philo_struct[i].state = DEAD; //FIXME datarace
+	data->philo_struct[i].state = DEAD; //FIXME datarace; also datarace when only one philo
 	pthread_mutex_unlock(&data->state_mutex);
 	pthread_mutex_lock(&data->someone_is_dead_mutex);
-	data->someone_is_dead = 1; //FIXME datarace
+	data->someone_is_dead = 1; //FIXME datarace; also datarace when only one philo
 	pthread_mutex_unlock(&data->someone_is_dead_mutex);
 	pthread_mutex_lock(&data->status_mutex);
-	data->status = 0; //FIXME datarace
+	data->status = 0; //FIXME datarace; also datarace when only one philo
 	pthread_mutex_unlock(&data->status_mutex);
 }
 

@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 15:54:52 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 16:27:11 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,10 @@ void	take_second_fork(t_philo *philo)
 		{
 			ms_sleep(philo->data->time_to_die);
 			pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-			philo->data->someone_is_dead = 1;
+			philo->data->someone_is_dead = 1; //FIXME datarace when only one philo
 			pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
 			pthread_mutex_lock(&philo->data->state_mutex);
-			philo->state = DEAD;
+			philo->state = DEAD; //FIXME datarace when only one philo
 			pthread_mutex_unlock(&philo->data->state_mutex);
 			return ;
 		}
