@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 17:00:32 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 11:27:51 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,31 @@ void	print_message(t_philo *philo, char *str)
 	}
 }
 
+bool	check_last_meal(t_philo *philo)
+{
+	if (time_stamp() - philo->last_meal >= philo->data->time_to_die)
+		return (true);
+	return (false);
+}
+
 //thread function
 void	*routine(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	//philo->last_meal = philo->data->start_time; //what I tried before long weekend
 	if (philo->id % 2 == 0)
 		usleep(50);
 	pthread_mutex_lock(&philo->data->status_mutex);
 	while (philo->data->status == 1)
 	{
+		// if (check_last_meal(philo) == true)
+		// {
+		// 	pthread_mutex_lock(&philo->data->state_mutex);
+		// 	philo->state = DEAD;
+		// 	pthread_mutex_unlock(&philo->data->state_mutex);
+		// 	break ;
+		// }
 		if (is_dead(philo) == false)
 		{
 			pthread_mutex_unlock(&philo->data->status_mutex);
@@ -48,8 +61,10 @@ void	*routine(void *arg)
 			eat(philo);
 			// }
 			time_to_sleep(philo);
-			if (philo->data->time_to_eat > philo->data->time_to_sleep)
+			if (philo->data->time_to_eat >= philo->data->time_to_sleep)
 			{
+				//printf("resultat du calcul pour ms_sleep pour philo %d: %ld\n", philo->id, ((time_stamp() + philo->data->time_to_die) - time_stamp()) - (time_stamp() - philo->data->start_time));
+				ms_sleep(((time_stamp() + philo->data->time_to_die) - time_stamp()) - (time_stamp() - philo->data->start_time));
 				pthread_mutex_lock(&philo->data->state_mutex);
 				philo->state = DEAD;
 				pthread_mutex_unlock(&philo->data->state_mutex);
