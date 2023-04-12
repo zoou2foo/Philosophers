@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 14:27:40 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 15:40:13 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ void	execute(char **av, t_data *data);
 void	print_message(t_philo *philo, char *str);
 
 /*		ACTIONS			*/
-bool	time_or_no_time(t_philo *philo);
 void	take_first_fork(t_philo *philo);
 void	take_second_fork(t_philo *philo);
 void	eat(t_philo *philo);
@@ -94,6 +93,5 @@ void	init_philo_mutex(char **av, t_data *data);
 bool	is_dead(t_philo *philo);
 void	end_when_full(t_data *data);
 void	end_when_dead(t_data *dat, int i);
-void	loop_check_state(t_data *data);
 
 #endif

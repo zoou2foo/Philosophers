@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 14:27:20 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 15:50:14 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,16 @@
 //to check if philo dies
 bool	is_dead(t_philo *philo)
 {
-	//time_or_no_time(philo);
-	pthread_mutex_lock(&philo->data->state_mutex); //mutex superflu
-	if (philo->state == DEAD)
+	pthread_mutex_lock(&philo->data->state_mutex);
+	if (philo->state == DEAD) //FIXME datarace
 	{
+		pthread_mutex_unlock(&philo->data->state_mutex);
 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-		philo->data->someone_is_dead = 1;
+		philo->data->someone_is_dead = 1; //FIXME datarace
 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
 		return (true);
 	}
-	pthread_mutex_unlock(&philo->data->state_mutex); //mutex superflu
+	pthread_mutex_unlock(&philo->data->state_mutex);
 	return (false);
 }
 
@@ -71,37 +71,4 @@ void	end_when_dead(t_data *data, int i)
 	pthread_mutex_destroy(&data->count_full);
 	pthread_mutex_destroy(&data->last_meal_mutex);
 	pthread_mutex_destroy(&data->full_mutex);
-}
-
-void	loop_check_state(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->nb_philos)
-	{
-		pthread_mutex_lock(&data->state_mutex);
-		//if (time_or_no_time(&data->philo_struct[i]) == false)
-		if ((time_stamp() - data->start_time) - data->philo_struct[i].last_meal >= data->time_to_die)
-		{
-			data->philo_struct[i].state = DEAD;
-			pthread_mutex_lock(&data->someone_is_dead_mutex);
-			data->someone_is_dead = 1;
-			pthread_mutex_unlock(&data->someone_is_dead_mutex);
-			pthread_mutex_unlock(&data->state_mutex);
-			pthread_mutex_lock(&data->status_mutex);
-			data->status = 0;
-			pthread_mutex_unlock(&data->status_mutex);
-			//pthread_mutex_lock(&data->print_mutex);
-			end_when_dead(data, i);
-			return ;
-		}
-		// if (data->philo_struct[i].state == DEAD)
-		// {
-		// }
-		pthread_mutex_unlock(&data->state_mutex);
-		i++;
-		if (i == data->nb_philos)
-			i = 0;
-	}
 }
