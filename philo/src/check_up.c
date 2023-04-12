@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 13:53:19 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 14:27:20 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void	end_when_dead(t_data *data, int i)
 	pthread_mutex_lock(&data->print_mutex);
 	printf("%ld - Philo %d is dead\n", time_stamp()
 		- data->start_time, data->philo_struct[i].id);
+	usleep(500);
 	pthread_mutex_unlock(&data->print_mutex);
 	i = 0;
 	while (i < data->nb_philos)
@@ -72,8 +73,11 @@ void	end_when_dead(t_data *data, int i)
 	pthread_mutex_destroy(&data->full_mutex);
 }
 
-void	loop_check_state(t_data *data, int i)
+void	loop_check_state(t_data *data)
 {
+	int	i;
+
+	i = 0;
 	while (i < data->nb_philos)
 	{
 		pthread_mutex_lock(&data->state_mutex);
@@ -81,7 +85,9 @@ void	loop_check_state(t_data *data, int i)
 		if ((time_stamp() - data->start_time) - data->philo_struct[i].last_meal >= data->time_to_die)
 		{
 			data->philo_struct[i].state = DEAD;
+			pthread_mutex_lock(&data->someone_is_dead_mutex);
 			data->someone_is_dead = 1;
+			pthread_mutex_unlock(&data->someone_is_dead_mutex);
 			pthread_mutex_unlock(&data->state_mutex);
 			pthread_mutex_lock(&data->status_mutex);
 			data->status = 0;

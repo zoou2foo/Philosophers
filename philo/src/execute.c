@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 13:52:13 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 14:37:58 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 
 	if (philo->id % 2 == 0)
-		usleep(50);
+		usleep(15000);
 	pthread_mutex_lock(&philo->data->status_mutex);
 	while (philo->data->status == 1)
 	{
@@ -83,24 +83,47 @@ void	*routine(void *arg)
 //need to relock before going back to the condition in the while
 void	wait_for_threads(t_data *data)
 {
+	// pthread_mutex_lock(&data->someone_is_dead_mutex);
+	// pthread_mutex_lock(&data->count_full);
+	// while (data->someone_is_dead != 1 && (data->nb_full_philos
+	// 		!= data->nb_philos))
 	int	i;
 
 	i = 0;
-	pthread_mutex_lock(&data->someone_is_dead_mutex);
-	pthread_mutex_lock(&data->count_full);
-	while (data->someone_is_dead != 1 && (data->nb_full_philos
-			!= data->nb_philos))
+	while (i < data->nb_philos)
 	{
-		pthread_mutex_unlock(&data->someone_is_dead_mutex);
-		pthread_mutex_unlock(&data->count_full);
-		loop_check_state(data, i);
-		usleep(50);
-		i = 0;
-		pthread_mutex_lock(&data->count_full);
-		pthread_mutex_lock(&data->someone_is_dead_mutex);
+		//if (time_or_no_time(&data->philo_struct[i]) == false)
+		if ((time_stamp() - data->start_time) - data->philo_struct[i].last_meal >= data->time_to_die)
+		{
+			pthread_mutex_lock(&data->state_mutex);
+			data->philo_struct[i].state = DEAD;
+			pthread_mutex_unlock(&data->state_mutex);
+			pthread_mutex_lock(&data->someone_is_dead_mutex);
+			data->someone_is_dead = 1;
+			pthread_mutex_unlock(&data->someone_is_dead_mutex);
+			pthread_mutex_lock(&data->status_mutex);
+			data->status = 0;
+			pthread_mutex_unlock(&data->status_mutex);
+			//pthread_mutex_lock(&data->print_mutex);
+			end_when_dead(data, i);
+			return ;
+		}
+		if (data->nb_full_philos == data->nb_philos)
+		{
+			end_when_full(data);
+			return ;
+		}
+		i++;
+		if (i == data->nb_philos)
+			i = 0;
+		
+		// pthread_mutex_unlock(&data->someone_is_dead_mutex);
+		// pthread_mutex_unlock(&data->count_full);
+		// loop_check_state(data);
+		// usleep(50);
+		// pthread_mutex_lock(&data->count_full);
+		// pthread_mutex_lock(&data->someone_is_dead_mutex);
 	}
-	if (data->nb_full_philos == data->nb_philos && data->someone_is_dead != 1)
-		end_when_full(data);
 	// else if (data->someone_is_dead == 1)
 	// 	end_when_dead(data, i);
 }

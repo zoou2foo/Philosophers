@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 13:58:55 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 14:16:03 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,14 +80,14 @@ void	take_second_fork(t_philo *philo)
 		pthread_mutex_unlock(&philo->data->last_meal_mutex);
 		ms_sleep(philo->data->time_to_eat);
 	}
-	else
-	{
-		ms_sleep(philo->data->time_to_die); //formule à revoir;  - (time_stamp() - philo->data->start_time
-		pthread_mutex_lock(&philo->data->state_mutex);
-		philo->state = DEAD;
-		pthread_mutex_unlock(&philo->data->state_mutex);
-		return ;
-	}
+	// else
+	// {
+	// 	ms_sleep(philo->data->time_to_die); //formule à revoir;  - (time_stamp() - philo->data->start_time
+	// 	pthread_mutex_lock(&philo->data->state_mutex);
+	// 	philo->state = DEAD;
+	// 	pthread_mutex_unlock(&philo->data->state_mutex);
+	// 	return ;
+	// }
 }
 
 //then time to eat takes care of setting up the time to eat
