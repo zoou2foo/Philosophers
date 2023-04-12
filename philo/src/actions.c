@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 16:58:45 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 08:25:46 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false && ((time_stamp() - philo->data->start_time) + philo->data->time_to_eat) && (philo->last_meal < philo->data->time_to_die))
+	if (is_dead(philo) == false && ((time_stamp() - philo->data->start_time) + philo->data->time_to_eat)) //&& (philo->last_meal < philo->data->time_to_die
 	{
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
@@ -74,10 +74,14 @@ void	take_second_fork(t_philo *philo)
 			% philo->data->nb_philos]);
 		print_message(philo, "has taken a 2nd fork");
 		print_message(philo, "is eating");
+		pthread_mutex_lock(&philo->data->last_meal_mutex);
+		ms_sleep(philo->data->time_to_eat);
+		philo->last_meal = time_stamp() - philo->data->start_time;
+		pthread_mutex_unlock(&philo->data->last_meal_mutex);
 	}
 	else
 	{
-		ms_sleep(philo->data->time_to_die - (time_stamp() - philo->data->start_time));
+		ms_sleep(philo->data->time_to_die); //formule à revoir;  - (time_stamp() - philo->data->start_time
 		pthread_mutex_lock(&philo->data->state_mutex);
 		philo->state = DEAD;
 		pthread_mutex_unlock(&philo->data->state_mutex);
@@ -89,10 +93,6 @@ void	take_second_fork(t_philo *philo)
 //keep track of last_meal and counts the number of time that they have eaten
 void	eat(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->data->last_meal_mutex);
-	philo->last_meal = time_stamp() - philo->data->start_time;
-	pthread_mutex_unlock(&philo->data->last_meal_mutex);
-	ms_sleep(philo->data->time_to_eat);
 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
 			% philo->data->nb_philos]));
