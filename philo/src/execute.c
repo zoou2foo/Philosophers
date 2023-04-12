@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/06 08:00:20 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 12:01:01 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,30 +26,54 @@ void	print_message(t_philo *philo, char *str)
 	}
 }
 
+bool	check_last_meal(t_philo *philo)
+{
+	if (time_stamp() - philo->last_meal >= philo->data->time_to_die)
+		return (true);
+	return (false);
+}
+
 //thread function
 void	*routine(void *arg)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	pthread_mutex_lock(&philo->data->last_meal_mutex);
-	philo->last_meal = philo->data->start_time;
-	pthread_mutex_unlock(&philo->data->last_meal_mutex);
 
 	if (philo->id % 2 == 0)
 		usleep(50);
 	pthread_mutex_lock(&philo->data->status_mutex);
 	while (philo->data->status == 1)
 	{
-		pthread_mutex_unlock(&philo->data->status_mutex);
-		if (time_or_no_time(philo)) //comment with Eric n Morgan yesterday
+		// if (check_last_meal(philo) == true)
+		// {
+		// 	pthread_mutex_lock(&philo->data->state_mutex);
+		// 	philo->state = DEAD;
+		// 	pthread_mutex_unlock(&philo->data->state_mutex);
+		// 	break ;
+		// }
+		if (is_dead(philo) == false)
 		{
+			pthread_mutex_unlock(&philo->data->status_mutex);
+			// if (time_or_no_time(philo))
+			// {
 			take_first_fork(philo);
 			take_second_fork(philo);
 			eat(philo);
+			// }
+			time_to_sleep(philo);
+			if (philo->data->time_to_eat >= philo->data->time_to_sleep)
+			{
+				//printf("resultat du calcul pour ms_sleep pour philo %d: %ld\n", philo->id, ((time_stamp() + philo->data->time_to_die) - time_stamp()) - (time_stamp() - philo->data->start_time));
+				ms_sleep(((time_stamp() + philo->data->time_to_die) - time_stamp()) - (time_stamp() - philo->data->start_time));
+				pthread_mutex_lock(&philo->data->state_mutex);
+				philo->state = DEAD;
+				pthread_mutex_unlock(&philo->data->state_mutex);
+			}
+			else
+				print_message(philo, "is thinking");
+			
 		}
-		time_to_sleep(philo);
-		print_message(philo, "is thinking");
 	}
 	pthread_mutex_unlock(&philo->data->status_mutex);
 	return (NULL);
@@ -101,5 +125,17 @@ void	execute(char **av, t_data *data)
 		pthread_detach(data->philo_struct[i].philo_th);
 		i++;
 	}
-	wait_for_threads(data);
+	wait_for_threads(data); //COMMENT rename to something more specific
 }
+
+//after lunch trying new strategy
+
+/*
+pthread_detach():
+The pthread_detach() function marks the thread identified by thread as detached.
+When a detached thread terminates, its resources are automatically released back
+to the system without the need for another thread to join with the terminated
+thread. Attempting to detach an already detached thread results in unspecified
+behavior.
+
+*/

@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:30:49 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 15:55:54 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 12:01:43 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ void	init_philo(char **av, t_data *data, int i)
 		data->philo_struct[i].nb_to_eat = ft_atoi(av[5]);
 	data->philo_struct[i].id = i + 1;
 	data->philo_struct[i].data = data;
-	//data->philo_struct[i].last_meal = 0;
+	data->philo_struct[i].last_meal = 0;
 	data->philo_struct[i].nb_meals_enjoyed = 0;
-	data->philo_struct[i].state = ALIVE;
+	data->philo_struct[i].state = ALIVE; //to keep or not to keep
 	pthread_mutex_init(&data->forks_mutex[i], NULL);
 }
 

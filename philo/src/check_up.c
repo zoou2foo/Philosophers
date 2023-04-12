@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/06 07:59:13 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 12:01:36 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 //to check if philo dies
 bool	is_dead(t_philo *philo)
 {
-	time_or_no_time(philo); //comment when working with Eric n Morgan
+	//time_or_no_time(philo);
 	pthread_mutex_lock(&philo->data->state_mutex); //mutex superflu
 	if (philo->state == DEAD)
 	{
