@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 12:01:36 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 13:53:19 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,16 +78,24 @@ void	loop_check_state(t_data *data, int i)
 	{
 		pthread_mutex_lock(&data->state_mutex);
 		//if (time_or_no_time(&data->philo_struct[i]) == false)
-		if (data->philo_struct[i].state == DEAD)
+		if ((time_stamp() - data->start_time) - data->philo_struct[i].last_meal >= data->time_to_die)
 		{
+			data->philo_struct[i].state = DEAD;
+			data->someone_is_dead = 1;
 			pthread_mutex_unlock(&data->state_mutex);
 			pthread_mutex_lock(&data->status_mutex);
 			data->status = 0;
 			pthread_mutex_unlock(&data->status_mutex);
-			pthread_mutex_lock(&data->print_mutex);
+			//pthread_mutex_lock(&data->print_mutex);
+			end_when_dead(data, i);
 			return ;
 		}
+		// if (data->philo_struct[i].state == DEAD)
+		// {
+		// }
 		pthread_mutex_unlock(&data->state_mutex);
 		i++;
+		if (i == data->nb_philos)
+			i = 0;
 	}
 }

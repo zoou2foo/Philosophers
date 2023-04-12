@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 12:01:01 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 13:52:13 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,16 +62,16 @@ void	*routine(void *arg)
 			eat(philo);
 			// }
 			time_to_sleep(philo);
-			if (philo->data->time_to_eat >= philo->data->time_to_sleep)
-			{
-				//printf("resultat du calcul pour ms_sleep pour philo %d: %ld\n", philo->id, ((time_stamp() + philo->data->time_to_die) - time_stamp()) - (time_stamp() - philo->data->start_time));
-				ms_sleep(((time_stamp() + philo->data->time_to_die) - time_stamp()) - (time_stamp() - philo->data->start_time));
-				pthread_mutex_lock(&philo->data->state_mutex);
-				philo->state = DEAD;
-				pthread_mutex_unlock(&philo->data->state_mutex);
-			}
-			else
-				print_message(philo, "is thinking");
+			// if (philo->data->time_to_eat + philo->data->time_to_sleep >= philo->data->time_to_die)
+			// {
+			// 	//printf("resultat du calcul pour ms_sleep pour philo %d: %ld\n", philo->id, ((time_stamp() + philo->data->time_to_die) - time_stamp()) - (time_stamp() - philo->data->start_time));
+			// 	ms_sleep(((time_stamp() + philo->data->time_to_die) - time_stamp()) - (time_stamp() - philo->data->start_time));
+			// 	pthread_mutex_lock(&philo->data->state_mutex);
+			// 	philo->state = DEAD;
+			// 	pthread_mutex_unlock(&philo->data->state_mutex);
+			// }
+			// else
+			print_message(philo, "is thinking");
 			
 		}
 	}
@@ -101,8 +101,8 @@ void	wait_for_threads(t_data *data)
 	}
 	if (data->nb_full_philos == data->nb_philos && data->someone_is_dead != 1)
 		end_when_full(data);
-	else if (data->someone_is_dead == 1)
-		end_when_dead(data, i);
+	// else if (data->someone_is_dead == 1)
+	// 	end_when_dead(data, i);
 }
 
 //starting the simulation

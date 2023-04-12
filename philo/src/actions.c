@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 12:01:26 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 13:58:55 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false && (time_stamp() - philo->data->start_time) < (time_stamp() - philo->data->start_time) + philo->data->time_to_eat)
+	if (is_dead(philo) == false)
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
 		print_message(philo, "has taken a fork");
@@ -57,7 +57,8 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false && ((time_stamp() - philo->data->start_time) + philo->data->time_to_eat)) //&& (philo->last_meal < philo->data->time_to_die
+	//&& ((time_stamp() - philo->data->start_time) - philo->data->time_to_eat) < philo->data->time_to_die
+	if (is_dead(philo) == false) //&& (philo->last_meal < philo->data->time_to_die
 	{
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
@@ -75,9 +76,9 @@ void	take_second_fork(t_philo *philo)
 		print_message(philo, "has taken a 2nd fork");
 		print_message(philo, "is eating");
 		pthread_mutex_lock(&philo->data->last_meal_mutex);
-		ms_sleep(philo->data->time_to_eat);
 		philo->last_meal = time_stamp() - philo->data->start_time;
 		pthread_mutex_unlock(&philo->data->last_meal_mutex);
+		ms_sleep(philo->data->time_to_eat);
 	}
 	else
 	{
@@ -142,22 +143,22 @@ void	time_to_sleep(t_philo *philo)
 	if (is_dead(philo) == false)
 	{
 		print_message(philo, "is sleeping");
-		if ((philo->data->time_to_eat + philo->data->time_to_sleep) //meurt en se réveillant/switchant à thinking
-			> philo->data->time_to_die)
-		{
-			ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
-			pthread_mutex_lock(&philo->data->state_mutex);
-			philo->state = DEAD;
-			pthread_mutex_unlock(&philo->data->state_mutex);
-		}
-		else if (philo->data->time_to_die < philo->data->time_to_sleep)
-		{
-			ms_sleep(philo->data->time_to_die);
-			pthread_mutex_lock(&philo->data->state_mutex);
-			philo->state = DEAD;
-			pthread_mutex_unlock(&philo->data->state_mutex);
-		}
-		else
-			ms_sleep(philo->data->time_to_sleep);
+		// if ((philo->data->time_to_eat + philo->data->time_to_sleep) //meurt en se réveillant/switchant à thinking
+		// 	> philo->data->time_to_die)
+		// {
+		// 	ms_sleep(philo->data->time_to_die - philo->data->time_to_eat);
+		// 	pthread_mutex_lock(&philo->data->state_mutex);
+		// 	philo->state = DEAD;
+		// 	pthread_mutex_unlock(&philo->data->state_mutex);
+		// }
+		// else if (philo->data->time_to_die < philo->data->time_to_sleep)
+		// {
+		// 	ms_sleep(philo->data->time_to_die);
+		// 	pthread_mutex_lock(&philo->data->state_mutex);
+		// 	philo->state = DEAD;
+		// 	pthread_mutex_unlock(&philo->data->state_mutex);
+		// }
+		// else
+		ms_sleep(philo->data->time_to_sleep);
 	}
 }
