@@ -6,45 +6,40 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 08:25:46 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 09:47:01 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-/*		FOUR FUNCTIONS			*/
+/*		FIVE FUNCTIONS			*/
 
-//not sure that it really works
-// // bool	time_or_no_time(t_philo *philo)
-// // {
-// // 	int t_last_meal = time_stamp() - philo->last_meal;
-// // 	// if (philo->last_meal > 0 && (((time_stamp() - philo->data->start_time) + philo->last_meal) > ((time_stamp() - philo->data->start_time) + philo->data->time_to_die)))
+bool	better_sleep(int time_param, t_philo *philo)
+{
+	time_t	now;
 
-// 	// printf("last_meal = %d\n", t_last_meal);
-
-// 	if(t_last_meal > philo->data->time_to_die)
-// 	{
-// 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-// 		//printf("switch state de philo: %d au temps: %ld\n", philo->id, (time_stamp() - philo->data->start_time));
-// 		philo->data->someone_is_dead = 1;
-// 		philo->state = DEAD;
-// 		// printf("%ld - Philo %d is dead\n", time_stamp()\
-// 		// - philo->data->start_time, philo->id);
-// 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
-// 		return (false);
-// 	}
-
-// 	else
-// 	{
-// 		return (true);
-// 	}
-// }
+	now = time_stamp();
+	while ((time_stamp() - now) < time_param)
+	{
+		if ((time_stamp() - philo->last_meal) >= philo->data->time_to_die)
+		{
+			pthread_mutex_lock(&philo->data->state_mutex);
+			philo->state = DEAD;
+			pthread_mutex_unlock(&philo->data->state_mutex);
+			return (true);
+		}
+		else
+			usleep(20);
+	}
+	return (false);
+}
 
 //take the first fork
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false && (time_stamp() - philo->data->start_time) < (time_stamp() - philo->data->start_time) + philo->data->time_to_eat)
+	//&& check_last_meal(philo) == false; maybe add to the if or not?
+	if (is_dead(philo) == false) //not dead
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
 		print_message(philo, "has taken a fork");
@@ -57,9 +52,10 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false && ((time_stamp() - philo->data->start_time) + philo->data->time_to_eat)) //&& (philo->last_meal < philo->data->time_to_die
+	//&& check_last_meal(philo) == false; it was in the if
+	if (is_dead(philo) == false) //not dead and not starving
 	{
-		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
+		if (philo->id - 1 == (philo->id) % philo->data->nb_philos) //if only one philo
 		{
 			ms_sleep(philo->data->time_to_die);
 			pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
@@ -75,17 +71,16 @@ void	take_second_fork(t_philo *philo)
 		print_message(philo, "has taken a 2nd fork");
 		print_message(philo, "is eating");
 		pthread_mutex_lock(&philo->data->last_meal_mutex);
-		ms_sleep(philo->data->time_to_eat);
-		philo->last_meal = time_stamp() - philo->data->start_time;
+		philo->last_meal = time_stamp();
 		pthread_mutex_unlock(&philo->data->last_meal_mutex);
-	}
-	else
-	{
-		ms_sleep(philo->data->time_to_die); //formule à revoir;  - (time_stamp() - philo->data->start_time
-		pthread_mutex_lock(&philo->data->state_mutex);
-		philo->state = DEAD;
-		pthread_mutex_unlock(&philo->data->state_mutex);
-		return ;
+		if (better_sleep(philo->data->time_to_eat, philo) == true)
+		{
+			// pthread_mutex_lock(&philo->data->state_mutex);
+			// philo->state = DEAD;
+			// pthread_mutex_unlock(&philo->data->state_mutex);
+			return ;
+		}
+		//ms_sleep(philo->data->time_to_eat);
 	}
 }
 
@@ -105,40 +100,13 @@ void	eat(t_philo *philo)
 		philo->data->nb_full_philos += 1;
 		pthread_mutex_unlock(&philo->data->count_full);
 	}
-	//before: if (((time_stamp() - philo->data->start_time) + philo->data->time_to_eat) > philo->data->time_to_die)
-	// if ((philo->data->time_to_die + philo->data->time_to_eat) < (time_stamp() - philo->data->start_time)) // this code solves the problem with 4 310 200 100 but creates prob with 5 800 200 200
-	// 	{
-	// 		ms_sleep(philo->data->time_to_die);
-	// 		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-	// 		philo->data->someone_is_dead = 1;
-	// 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
-	// 		pthread_mutex_lock(&philo->data->state_mutex);
-	// 		philo->state = DEAD;
-	// 		pthread_mutex_unlock(&philo->data->state_mutex);
-	// 		return ;
-	// 	}
-	// else
-	// {
-	// 	ms_sleep(philo->data->time_to_eat);
-	// 	pthread_mutex_unlock(&(philo->data->forks_mutex[philo->id - 1]));
-	// 	pthread_mutex_unlock(&(philo->data->forks_mutex[(philo->id)
-	// 			% philo->data->nb_philos]));
-	// 	pthread_mutex_lock(&philo->data->full_mutex);
-	// 	philo->nb_meals_enjoyed++;
-	// 	pthread_mutex_unlock(&philo->data->full_mutex);
-	// 	if (philo->nb_meals_enjoyed == philo->nb_to_eat)
-	// 	{
-	// 		pthread_mutex_lock(&philo->data->count_full);
-	// 		philo->data->nb_full_philos += 1;
-	// 		pthread_mutex_unlock(&philo->data->count_full);
-	// 	}
-	// }
 }
 
 //putting the philo to sleep
 //need to check if philo will die during his sleep
 void	time_to_sleep(t_philo *philo)
 {
+	// && check_last_meal(philo) == false it was in the if before
 	if (is_dead(philo) == false)
 	{
 		print_message(philo, "is sleeping");
@@ -150,14 +118,16 @@ void	time_to_sleep(t_philo *philo)
 			philo->state = DEAD;
 			pthread_mutex_unlock(&philo->data->state_mutex);
 		}
-		else if (philo->data->time_to_die < philo->data->time_to_sleep)
-		{
-			ms_sleep(philo->data->time_to_die);
-			pthread_mutex_lock(&philo->data->state_mutex);
-			philo->state = DEAD;
-			pthread_mutex_unlock(&philo->data->state_mutex);
-		}
 		else
-			ms_sleep(philo->data->time_to_sleep);
+		{
+			if (better_sleep(philo->data->time_to_sleep, philo) == true)
+			{
+				pthread_mutex_lock(&philo->data->state_mutex);
+				philo->state = DEAD;
+				pthread_mutex_unlock(&philo->data->state_mutex);
+				return ;
+			}
+		}
+			//ms_sleep(philo->data->time_to_sleep);
 	}
 }

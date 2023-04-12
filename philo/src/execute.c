@@ -6,24 +6,37 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/11 17:00:32 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 09:35:32 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-/*		FOUR FUNCTIONS			*/
+/*		FIVE FUNCTIONS			*/
 
 //function to print_messages
 void	print_message(t_philo *philo, char *str)
 {
-	if (is_dead(philo) == false)
+	// if (is_dead(philo) == false)
+	// {
+	pthread_mutex_lock(&philo->data->print_mutex);
+	printf("%ld - Philo %d %s\n", time_stamp()
+		- philo->data->start_time, philo->id, str);
+	pthread_mutex_unlock(&philo->data->print_mutex);
+	// }
+}
+
+bool	check_last_meal(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->last_meal_mutex);
+	if ((time_stamp() - philo->last_meal) >= philo->data->time_to_die)
 	{
-		pthread_mutex_lock(&philo->data->print_mutex);
-		printf("%ld - Philo %d %s\n", time_stamp()
-			- philo->data->start_time, philo->id, str);
-		pthread_mutex_unlock(&philo->data->print_mutex);
+		pthread_mutex_lock(&philo->data->state_mutex);
+		philo->state = DEAD;
+		pthread_mutex_unlock(&philo->data->state_mutex);
+		return (true);
 	}
+	return (false);
 }
 
 //thread function
@@ -32,32 +45,32 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	//philo->last_meal = philo->data->start_time; //what I tried before long weekend
 	if (philo->id % 2 == 0)
 		usleep(50);
 	pthread_mutex_lock(&philo->data->status_mutex);
 	while (philo->data->status == 1)
 	{
-		if (is_dead(philo) == false)
+		pthread_mutex_unlock(&philo->data->status_mutex);
+		if (check_last_meal(philo) == true)
+			return (NULL);
+		if (is_dead(philo) == false) //check if the philo is dead
 		{
-			pthread_mutex_unlock(&philo->data->status_mutex);
-			// if (time_or_no_time(philo))
-			// {
+			//if philo not dead and not starving, do the routine
 			take_first_fork(philo);
 			take_second_fork(philo);
 			eat(philo);
-			// }
 			time_to_sleep(philo);
-			if (philo->data->time_to_eat > philo->data->time_to_sleep)
-			{
-				pthread_mutex_lock(&philo->data->state_mutex);
-				philo->state = DEAD;
-				pthread_mutex_unlock(&philo->data->state_mutex);
-			}
-			else
-				print_message(philo, "is thinking");
-			
+			// if (philo->data->time_to_eat > philo->data->time_to_sleep)
+			// {
+			// 	pthread_mutex_lock(&philo->data->state_mutex);
+			// 	philo->state = DEAD;
+			// 	pthread_mutex_unlock(&philo->data->state_mutex);
+			// }
+			// else
+			print_message(philo, "is thinking");
 		}
+		else
+			return (NULL);
 	}
 	pthread_mutex_unlock(&philo->data->status_mutex);
 	return (NULL);

@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/05 12:08:08 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 09:30:09 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,10 @@ void	ms_sleep(int ms);
 /*		EXECUTE			*/
 void	execute(char **av, t_data *data);
 void	print_message(t_philo *philo, char *str);
+bool	check_last_meal(t_philo *philo);
 
 /*		ACTIONS			*/
-bool	time_or_no_time(t_philo *philo);
+bool	better_sleep(int time_param, t_philo *philo);
 void	take_first_fork(t_philo *philo);
 void	take_second_fork(t_philo *philo);
 void	eat(t_philo *philo);

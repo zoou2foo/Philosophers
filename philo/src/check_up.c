@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/12 08:40:06 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/12 09:33:05 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,11 @@ void	loop_check_state(t_data *data, int i)
 	while (i < data->nb_philos)
 	{
 		pthread_mutex_lock(&data->state_mutex);
-		if (data->philo_struct[i].state == DEAD)
+		pthread_mutex_lock(&data->someone_is_dead_mutex);
+		if (data->philo_struct[i].state == DEAD || data->someone_is_dead)
 		{
 			pthread_mutex_unlock(&data->state_mutex);
+			pthread_mutex_unlock(&data->someone_is_dead_mutex);
 			pthread_mutex_lock(&data->status_mutex);
 			data->status = 0;
 			pthread_mutex_unlock(&data->status_mutex);
@@ -87,6 +89,7 @@ void	loop_check_state(t_data *data, int i)
 			return ;
 		}
 		pthread_mutex_unlock(&data->state_mutex);
+		pthread_mutex_unlock(&data->someone_is_dead_mutex);
 		i++;
 	}
 }
