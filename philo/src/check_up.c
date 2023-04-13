@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:35:28 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/13 11:22:48 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/13 17:47:35 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,17 @@
 //to check if philo dies
 bool	is_dead(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->data->state_mutex);
-	if (philo->state == DEAD) //FIXME datarace
+	//pthread_mutex_lock(&philo->data->state_mutex);
+	pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
+	if (philo->state == DEAD) //FIXME datarace; remplacer ça par juste philo->data->status tout court, anyway c'est l'externe qui s'occupe de le faire mourir. Alors, pourquoi pas réutiliser cette variable. Puis, ça enlève des mutexes.
 	{
-		pthread_mutex_unlock(&philo->data->state_mutex);
-		pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-		philo->data->someone_is_dead = 1; //FIXME datarace
+		//pthread_mutex_unlock(&philo->data->state_mutex);
+		philo->data->someone_is_dead = 1; //FIXED datarace
 		pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
 		return (true);
 	}
-	pthread_mutex_unlock(&philo->data->state_mutex);
+	pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
+	//pthread_mutex_unlock(&philo->data->state_mutex);
 	return (false);
 }
 
