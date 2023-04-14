@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/14 10:56:14 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/14 11:34:22 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,8 @@ void	take_second_fork(t_philo *philo)
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
 			ms_sleep(philo->data->time_to_die);
-			// pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-			// philo->data->someone_is_dead = 1; //FIXED datarace when only one philo
-			// pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
 			pthread_mutex_lock(&philo->data->state_mutex);
-			philo->state = DEAD; //FIXED datarace when only one philo
+			philo->state = DEAD;
 			pthread_mutex_unlock(&philo->data->state_mutex);
 			return ;
 		}
@@ -49,7 +46,7 @@ void	take_second_fork(t_philo *philo)
 		print_message(philo, "has taken a 2nd fork");
 		print_message(philo, "is eating");
 		pthread_mutex_lock(&philo->data->last_meal_mutex);
-		philo->last_meal = time_stamp() - philo->data->start_time; //FIXME datarace with 5 510 250 250
+		philo->last_meal = time_stamp() - philo->data->start_time;
 		pthread_mutex_unlock(&philo->data->last_meal_mutex);
 		ms_sleep(philo->data->time_to_eat);
 	}

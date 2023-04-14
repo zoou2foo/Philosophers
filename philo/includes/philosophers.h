@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/14 10:57:04 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/14 11:37:36 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@
 # define ERR_THREAD		"Error to create thread"
 
 typedef enum e_state{
-	EATING,
-	SLEEPING,
 	ALIVE,
 	DEAD
 }	t_state;
@@ -50,13 +48,11 @@ typedef struct s_data{
 	int						time_to_die;
 	int						time_to_eat;
 	int						time_to_sleep;
-	int						someone_is_dead;
 	int						nb_full_philos;
 	time_t					start_time;
 	pthread_mutex_t			full_mutex;
 	pthread_mutex_t			count_full;
 	pthread_mutex_t			last_meal_mutex;
-	pthread_mutex_t			someone_is_dead_mutex;
 	pthread_mutex_t			state_mutex;
 	pthread_mutex_t			print_mutex;
 	pthread_mutex_t			status_mutex;
