@@ -60,7 +60,7 @@ endif
 
 # Compiler and flags
 CC		=	gcc
-CFLAGS	=	-Wall -Werror -Wextra -pthread -fsanitize=thread #-D debug
+CFLAGS	=	-Wall -Werror -Wextra -pthread #-fsanitize=thread #-D debug
 RACE_F	=	-fsanitize=thread
 RM		=	rm -rf
 MD		=	mkdir -p
@@ -139,4 +139,4 @@ run: re
 # Runs the program with valgrind
 leaks: all
 	@echo "$(RED)Checking leaks...$(DEF_COLOR)"
-	$(HIDE) valgrind --leak-check=full --show-leak-kinds=all -s $(CMD) 5 800 200 200
+	$(HIDE) valgrind --leak-check=full --show-leak-kinds=all -s $(CMD) 4 410 310 200 100

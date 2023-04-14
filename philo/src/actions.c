@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/13 16:24:19 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/14 10:56:14 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) != 3)
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
 		print_message(philo, "has taken a fork");
@@ -31,14 +31,14 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) != 3)
 	{
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
 			ms_sleep(philo->data->time_to_die);
-			pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
-			philo->data->someone_is_dead = 1; //FIXED datarace when only one philo
-			pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
+			// pthread_mutex_lock(&philo->data->someone_is_dead_mutex);
+			// philo->data->someone_is_dead = 1; //FIXED datarace when only one philo
+			// pthread_mutex_unlock(&philo->data->someone_is_dead_mutex);
 			pthread_mutex_lock(&philo->data->state_mutex);
 			philo->state = DEAD; //FIXED datarace when only one philo
 			pthread_mutex_unlock(&philo->data->state_mutex);
@@ -49,7 +49,7 @@ void	take_second_fork(t_philo *philo)
 		print_message(philo, "has taken a 2nd fork");
 		print_message(philo, "is eating");
 		pthread_mutex_lock(&philo->data->last_meal_mutex);
-		philo->last_meal = time_stamp() - philo->data->start_time; //FIXED datarace
+		philo->last_meal = time_stamp() - philo->data->start_time; //FIXME datarace with 5 510 250 250
 		pthread_mutex_unlock(&philo->data->last_meal_mutex);
 		ms_sleep(philo->data->time_to_eat);
 	}
@@ -75,7 +75,7 @@ void	eat(t_philo *philo)
 //need to check if philo will die during his sleep
 void	time_to_sleep(t_philo *philo)
 {
-	if (is_dead(philo) == false)
+	if (is_dead(philo) != 3)
 	{
 		print_message(philo, "is sleeping");
 		ms_sleep(philo->data->time_to_sleep);
