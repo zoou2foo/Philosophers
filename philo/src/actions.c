@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:17:16 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/14 11:34:22 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/14 14:46:43 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 //philo 1 takes fork_mutex 0 and so on...
 void	take_first_fork(t_philo *philo)
 {
-	if (is_dead(philo) != 3)
+	if (is_dead(philo) != 1)
 	{
 		pthread_mutex_lock(&philo->data->forks_mutex[philo->id - 1]);
 		print_message(philo, "has taken a fork");
@@ -31,7 +31,7 @@ void	take_first_fork(t_philo *philo)
 //between when philo can eat and the message printed.
 void	take_second_fork(t_philo *philo)
 {
-	if (is_dead(philo) != 3)
+	if (is_dead(philo) != 1)
 	{
 		if (philo->id - 1 == (philo->id) % philo->data->nb_philos)
 		{
@@ -72,7 +72,7 @@ void	eat(t_philo *philo)
 //need to check if philo will die during his sleep
 void	time_to_sleep(t_philo *philo)
 {
-	if (is_dead(philo) != 3)
+	if (is_dead(philo) != 1)
 	{
 		print_message(philo, "is sleeping");
 		ms_sleep(philo->data->time_to_sleep);
