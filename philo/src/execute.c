@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/02 14:02:50 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/15 15:18:42 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/15 15:47:07 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ void	*routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
-	usleep(15000);
 	if (philo->id % 2 == 0)
 		usleep(15000);
 	while (is_dead(philo) != 1 && is_full(philo) != 1)
