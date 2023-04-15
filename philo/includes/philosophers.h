@@ -6,7 +6,7 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/04 16:06:00 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/14 11:37:36 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/15 15:08:43 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void	ms_sleep(int ms);
 /*		EXECUTE			*/
 void	execute(char **av, t_data *data);
 void	print_message(t_philo *philo, char *str);
+void	lock_n_change(t_data *data, int i);
 
 /*		ACTIONS			*/
 void	take_first_fork(t_philo *philo);
@@ -84,10 +85,12 @@ void	init_philo(char **av, t_data *data, int i);
 void	setup_datastruct(t_data *data, char **str);
 void	init_singles_mutex(t_data *data);
 void	init_philo_mutex(char **av, t_data *data);
+void	kill_mutex(t_data *data);
 
 /*		CHECK_UP		*/
 int		is_dead(t_philo *philo);
-void	end_when_full(t_data *data);
 void	end_when_dead(t_data *dat, int i);
+int		is_full(t_philo *philo);
+void	check_health(t_data *data);
 
 #endif

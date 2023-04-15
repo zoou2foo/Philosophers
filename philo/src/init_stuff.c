@@ -6,13 +6,13 @@
 /*   By: vjean <vjean@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/22 09:30:49 by vjean             #+#    #+#             */
-/*   Updated: 2023/04/14 15:35:07 by vjean            ###   ########.fr       */
+/*   Updated: 2023/04/15 15:21:13 by vjean            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-/*		FOUR FUNCTIONS		*/
+/*		FIVE FUNCTIONS		*/
 
 //to initialize the data struct
 void	setup_datastruct(t_data *data, char **str)
@@ -21,6 +21,7 @@ void	setup_datastruct(t_data *data, char **str)
 	data->time_to_die = ft_atoi(str[2]);
 	data->time_to_eat = ft_atoi(str[3]);
 	data->time_to_sleep = ft_atoi(str[4]);
+	data->status = ALIVE;
 	data->nb_full_philos = 0;
 }
 
@@ -43,7 +44,6 @@ void	init_philo(char **av, t_data *data, int i)
 void	init_singles_mutex(t_data *data)
 {
 	pthread_mutex_init(&(data->print_mutex), NULL);
-	// pthread_mutex_init(&(data->full_mutex), NULL);
 	pthread_mutex_init(&(data->count_full), NULL);
 	pthread_mutex_init(&data->state_mutex, NULL);
 	pthread_mutex_init(&data->last_meal_mutex, NULL);
@@ -60,4 +60,22 @@ void	init_philo_mutex(char **av, t_data *data)
 		init_philo(av, data, i);
 		i++;
 	}
+}
+
+//small function to kill them all (destroy mutexes)
+void	kill_mutex(t_data *data)
+{
+	int	i;
+
+	usleep(500);
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		pthread_mutex_destroy(&data->forks_mutex[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&data->print_mutex);
+	pthread_mutex_destroy(&data->state_mutex);
+	pthread_mutex_destroy(&data->count_full);
+	pthread_mutex_destroy(&data->last_meal_mutex);
 }
